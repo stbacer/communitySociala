@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.ccst.communitysocialmain.mapper.PostMapper">
+    
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.edu.ccst.communitysocialmain.entity.Post">
+        <id column="post_id" property="postId"/>
+        <result column="user_id" property="userId"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="image_urls" property="imageUrls" typeHandler="cn.edu.ccst.communitysocialmain.typehandler.ImageUrlsTypeHandler"/>
+        <result column="status" property="status"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <result column="view_count" property="viewCount"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="comment_count" property="commentCount"/>
+        <result column="collect_count" property="collectCount"/>
+        <result column="is_anonymous" property="isAnonymous"/>
+        <result column="is_top" property="isTop"/>
+        <result column="publish_time" property="publishTime"/>
+        <result column="reviewer_id" property="reviewerId"/>
+        <result column="review_time" property="reviewTime"/>
+        <result column="review_remark" property="reviewRemark"/>
+        <!-- 二手交易字段 -->
+        <result column="price" property="price"/>
+        <result column="transaction_mode" property="transactionMode"/>
+        <result column="contact_info" property="contactInfo"/>
+    </resultMap>
+    
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        post_id, user_id, category_id, title, content, image_urls, status, longitude, latitude,
+        view_count, like_count, comment_count, collect_count, is_anonymous, is_top,
+        publish_time, reviewer_id, review_time, review_remark,
+        price, transaction_mode, contact_info
+    </sql>
+    
+    <!-- 根据帖子ID查询 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE post_id = #{postId}
+    </select>
+    
+    <!-- 根据用户 ID 查询帖子列表 -->
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE user_id = #{userId} AND status = 2
+        ORDER BY is_top DESC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据用户 ID 和状态查询帖子列表 -->
+    <select id="selectByUserIdAndStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE user_id = #{userId} AND status = #{status}
+        ORDER BY is_top DESC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据用户 ID 查询帖子列表（用于我的帖子页，包括待审核和已审核通过的帖子） -->
+    <select id="selectByUserIdForOwner" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE user_id = #{userId} AND status IN (1, 2)
+        ORDER BY is_top DESC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据板块分类 ID 查询帖子列表 -->
+    <select id="selectByCategoryId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE category_id = #{categoryId} AND status = 2
+        ORDER BY is_top DESC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据状态查询帖子列表 -->
+    <select id="selectByStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE status = #{status}
+        ORDER BY is_top DESC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 查询待审核帖子 -->
+    <select id="selectPendingPosts" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE status = 1
+        ORDER BY publish_time ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据关键词搜索帖子 -->
+    <select id="selectByKeyword" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%'))
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+        ORDER BY is_top DESC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据条件筛选帖子 -->
+    <select id="selectByConditions" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE 1=1
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+        ORDER BY is_top DESC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 查询所有帖子（排除已删除） -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE status != 0
+        ORDER BY is_top DESC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 按时间排序查询帖子 -->
+    <select id="selectByTime" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE status = #{status}
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY is_top DESC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 按热度排序查询帖子 -->
+    <select id="selectByHot" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE status = #{status}
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY is_top DESC, (view_count * 0.3 + like_count * 0.5 + comment_count * 0.2) DESC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 按地理位置查询附近帖子 -->
+    <select id="selectByNearby" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>,
+               (6371 * acos(cos(radians(#{latitude})) * cos(radians(latitude)) * 
+               cos(radians(longitude) - radians(#{longitude})) + 
+               sin(radians(#{latitude})) * sin(radians(latitude)))) AS distance
+        FROM post
+        WHERE status = #{status}
+          AND longitude IS NOT NULL 
+          AND latitude IS NOT NULL
+          AND (6371 * acos(cos(radians(#{latitude})) * cos(radians(latitude)) * 
+              cos(radians(longitude) - radians(#{longitude})) + 
+              sin(radians(#{latitude})) * sin(radians(latitude)))) &lt;= #{radius}
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY is_top DESC, distance ASC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据时间范围查询帖子列表 -->
+    <select id="selectByTimeRange" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE publish_time BETWEEN #{startTime} AND #{endTime}
+        ORDER BY publish_time DESC
+    </select>
+    
+    <!-- 统计帖子总数 -->
+    <select id="countAll" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM post WHERE status != 0
+    </select>
+    
+    <!-- 根据用户 ID 统计帖子数量 -->
+    <select id="countByUserId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM post WHERE user_id = #{userId} AND status = 2
+    </select>
+    
+    <!-- 根据用户 ID 和状态统计帖子数量 -->
+    <select id="countByUserIdAndStatus" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM post WHERE user_id = #{userId} AND status = #{status}
+    </select>
+    
+    <!-- 根据用户 ID 统计帖子数量（用于我的帖子页，包括待审核和已审核通过的帖子） -->
+    <select id="countByUserIdForOwner" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM post WHERE user_id = #{userId} AND status IN (1, 2)
+    </select>
+    
+    <!-- 根据板块分类 ID 统计帖子数量 -->
+    <select id="countByCategoryId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM post WHERE category_id = #{categoryId} AND status = 2
+    </select>
+    
+    <!-- 根据板块分类 ID 和时间范围统计帖子数量 -->
+    <select id="countByCategoryIdAndTimeRange" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM post 
+        WHERE category_id = #{categoryId} 
+          AND status = 2
+          AND publish_time &gt;= #{startTime}
+    </select>
+    
+    <!-- 根据板块分类 ID、时间范围和社区统计帖子数量（社区管理员用） -->
+    <select id="countByCategoryIdAndTimeRangeAndCommunity" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM post p
+        INNER JOIN user u ON p.user_id = u.user_id
+        WHERE p.category_id = #{categoryId} 
+          AND p.status = 2
+          AND p.publish_time &gt;= #{startTime}
+          AND u.community = #{community}
+    </select>
+    
+    <!-- 根据板块分类 ID 和社区统计帖子数量（社区管理员用） -->
+    <select id="countByCategoryIdAndCommunity" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM post p
+        INNER JOIN user u ON p.user_id = u.user_id
+        WHERE p.category_id = #{categoryId} 
+          AND p.status = 2
+          AND u.community = #{community}
+    </select>
+    
+    <!-- 根据关键词统计帖子数量 -->
+    <select id="countByKeyword" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM post
+        WHERE (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%'))
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+    </select>
+    
+    <!-- 根据条件统计帖子数量 -->
+    <select id="countByConditions" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM post
+        WHERE 1=1
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+    </select>
+    
+    <!-- 根据状态统计帖子数量 -->
+    <select id="countByStatus" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM post WHERE status = #{status}
+    </select>
+    
+    <!-- 根据类型查询帖子列表 -->
+    <select id="selectByType" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM post
+        WHERE category_id = #{type} AND status = 2
+        ORDER BY is_top DESC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据类型统计帖子数量 -->
+    <select id="countByType" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM post WHERE category_id = #{type} AND status = 2
+    </select>
+    
+    <!-- 统计今日审核数量 -->
+    <select id="countReviewedToday" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM post 
+        WHERE review_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+    
+    <!-- 插入帖子 -->
+    <insert id="insert">
+        INSERT INTO post (
+            post_id, user_id, category_id, title, content, image_urls, status, longitude, latitude,
+            view_count, like_count, comment_count, collect_count, is_anonymous,
+            publish_time, reviewer_id, review_time, review_remark,
+            price, transaction_mode, contact_info
+        ) VALUES (
+            #{postId}, #{userId}, #{categoryId}, #{title}, #{content}, #{imageUrls,typeHandler=cn.edu.ccst.communitysocialmain.typehandler.DelimitedStringListTypeHandler}, #{status}, 
+            #{longitude}, #{latitude}, #{viewCount}, #{likeCount}, #{commentCount}, 
+            #{collectCount}, #{isAnonymous}, #{publishTime}, #{reviewerId}, #{reviewTime}, #{reviewRemark},
+            #{price}, #{transactionMode}, #{contactInfo}
+        )
+    </insert>
+    
+    <!-- 更新帖子 -->
+    <update id="update">
+        UPDATE post
+        <set>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="imageUrls != null">image_urls = #{imageUrls,typeHandler=cn.edu.ccst.communitysocialmain.typehandler.DelimitedStringListTypeHandler},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="isAnonymous != null">is_anonymous = #{isAnonymous},</if>
+            <if test="isTop != null">is_top = #{isTop},</if>
+            <if test="reviewerId != null">reviewer_id = #{reviewerId},</if>
+            <if test="reviewTime != null">review_time = #{reviewTime},</if>
+            <if test="reviewRemark != null">review_remark = #{reviewRemark},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="transactionMode != null">transaction_mode = #{transactionMode},</if>
+            <if test="contactInfo != null">contact_info = #{contactInfo},</if>
+        </set>
+        WHERE post_id = #{postId}
+    </update>
+    
+    <!-- 更新帖子状态 -->
+    <update id="updateStatus">
+        UPDATE post
+        SET status = #{status}, 
+          review_time = NOW(),
+          reviewer_id = #{reviewerId}
+        WHERE post_id = #{postId}
+    </update>
+    
+    <!-- 增加浏览次数 -->
+    <update id="incrementViewCount">
+        UPDATE post
+        SET view_count = view_count + 1
+        WHERE post_id = #{postId}
+    </update>
+    
+    <!-- 增加点赞数 -->
+    <update id="incrementLikeCount">
+        UPDATE post
+        SET like_count = like_count + 1
+        WHERE post_id = #{postId}
+    </update>
+    
+    <!-- 减少点赞数 -->
+    <update id="decrementLikeCount">
+        UPDATE post
+        SET like_count = like_count - 1
+        WHERE post_id = #{postId} AND like_count > 0
+    </update>
+    
+    <!-- 增加评论数 -->
+    <update id="incrementCommentCount">
+        UPDATE post
+        SET comment_count = comment_count + 1
+        WHERE post_id = #{postId}
+    </update>
+    
+    <!-- 减少评论数 -->
+    <update id="decrementCommentCount">
+        UPDATE post
+        SET comment_count = comment_count - 1
+        WHERE post_id = #{postId} AND comment_count > 0
+    </update>
+    
+    <!-- 增加收藏数 -->
+    <update id="incrementCollectCount">
+        UPDATE post
+        SET collect_count = collect_count + 1
+        WHERE post_id = #{postId}
+    </update>
+    
+    <!-- 减少收藏数 -->
+    <update id="decrementCollectCount">
+        UPDATE post
+        SET collect_count = collect_count - 1
+        WHERE post_id = #{postId} AND collect_count > 0
+    </update>
+    
+    <!-- 删除帖子 -->
+    <update id="deleteById">
+        UPDATE post
+        SET status = 0
+        WHERE post_id = #{postId}
+    </update>
+    
+    <!-- 根据社区查询帖子列表（居民端专用） -->
+    <select id="selectByCommunity" resultMap="BaseResultMap">
+        SELECT p.post_id, p.user_id, p.category_id, p.title, p.content, p.image_urls, p.status, p.longitude, p.latitude,
+               p.view_count, p.like_count, p.comment_count, p.collect_count, p.is_anonymous,
+               p.publish_time, p.reviewer_id, p.review_time, p.review_remark,
+               p.price, p.transaction_mode, p.contact_info
+        FROM post p
+        INNER JOIN user u ON p.user_id = u.user_id
+        WHERE u.community = #{community} AND p.status = 2
+        ORDER BY p.publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据社区和分类查询帖子列表 -->
+    <select id="selectByCommunityAndCategory" resultMap="BaseResultMap">
+        SELECT p.post_id, p.user_id, p.category_id, p.title, p.content, p.image_urls, p.status, p.longitude, p.latitude,
+               p.view_count, p.like_count, p.comment_count, p.collect_count, p.is_anonymous,
+               p.publish_time, p.reviewer_id, p.review_time, p.review_remark,
+               p.price, p.transaction_mode, p.contact_info
+        FROM post p
+        INNER JOIN user u ON p.user_id = u.user_id
+        WHERE u.community = #{community} 
+          AND p.category_id = #{categoryId}
+        <if test="status != null">
+          AND p.status = #{status}
+        </if>
+        ORDER BY p.is_top DESC, p.publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据社区和关键词搜索帖子 -->
+    <select id="selectByCommunityAndKeyword" resultMap="BaseResultMap">
+        SELECT p.post_id, p.user_id, p.category_id, p.title, p.content, p.image_urls, p.status, p.longitude, p.latitude,
+               p.view_count, p.like_count, p.comment_count, p.collect_count, p.is_anonymous,
+               p.publish_time, p.reviewer_id, p.review_time, p.review_remark,
+               p.price, p.transaction_mode, p.contact_info
+        FROM post p
+        INNER JOIN user u ON p.user_id = u.user_id
+        WHERE u.community = #{community}
+          AND p.status = #{status}
+        <if test="categoryId != null">
+          AND p.category_id = #{categoryId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+          AND (p.title LIKE CONCAT('%', #{keyword}, '%') OR p.content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY p.is_top DESC, p.publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据社区统计帖子数量 -->
+    <select id="countByCommunity" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM post p
+        INNER JOIN user u ON p.user_id = u.user_id
+        WHERE u.community = #{community} AND p.status = 2
+    </select>
+    
+    <!-- 根据社区和时间范围统计帖子数量 -->
+    <select id="countByCommunityAndTimeRange" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM post p
+        INNER JOIN user u ON p.user_id = u.user_id
+        WHERE u.community = #{community}
+          AND p.publish_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+    
+    <!-- 根据社区和分类统计帖子数量 -->
+    <select id="countByCommunityAndCategory" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM post p
+        INNER JOIN user u ON p.user_id = u.user_id
+        WHERE u.community = #{community}
+          AND p.category_id = #{categoryId}
+          AND p.status = 2
+    </select>
+    
+</mapper>

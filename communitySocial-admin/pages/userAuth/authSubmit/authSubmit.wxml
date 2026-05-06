@@ -1,0 +1,88 @@
+<!--pages/userAuth/authSubmit/authSubmit.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">实名认证</text>
+    <text class="subtitle">请填写真实信息完成认证</text>
+  </view>
+
+  <view class="form-section">
+    <view class="form-item">
+      <text class="label">真实姓名 *</text>
+      <input 
+        class="input" 
+        value="{{formData.realName}}"
+        bindinput="onInput"
+        data-field="realName"
+        placeholder="请输入真实姓名"
+        maxlength="50"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">身份证号 *</text>
+      <input 
+        class="input" 
+        type="idcard"
+        value="{{formData.idCard}}"
+        bindinput="onInput"
+        data-field="idCard"
+        placeholder="请输入身份证号"
+        maxlength="18"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">所在省市区 *</text>
+      <picker 
+        mode="multiSelector" 
+        range="{{regionRange}}"
+        range-key="name"
+        value="{{regionValue}}"
+        bindchange="onRegionChange"
+        bindcolumnchange="onColumnChange"
+      >
+        <view class="input form-picker {{selectedRegionText ? '' : 'placeholder'}}">
+          {{selectedRegionText || '请选择省市区'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">所在社区 *</text>
+      <input 
+        class="input" 
+        value="{{formData.community}}"
+        bindinput="onInput"
+        data-field="community"
+        placeholder="请输入所在社区名称"
+        maxlength="100"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">身份证明图片 *</text>
+      <view class="upload-section">
+        <view class="image-list" wx:if="{{identityImages.length > 0}}">
+          <view class="image-item" wx:for="{{identityImages}}" wx:key="index">
+            <image class="preview-image" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-index="{{index}}"></image>
+            <view class="delete-btn" catchtap="deleteImage" data-index="{{index}}">×</view>
+          </view>
+        </view>
+        
+        <view class="upload-btn" bindtap="uploadImage" wx:if="{{identityImages.length < 4}}">
+          <text class="upload-icon">+</text>
+          <text class="upload-text">上传图片</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="tips-section">
+    <text class="tips-title">温馨提示：</text>
+    <text class="tips-content">提交后需要管理员审核，审核通过后即可使用管理功能</text>
+  </view>
+
+  <view class="button-section">
+    <button class="submit-btn" bindtap="handleSubmit" loading="{{loading}}">提交认证</button>
+  </view>
+</view>

@@ -1,0 +1,149 @@
+<!--pages/profile/auth/auth.wxml-->
+<view class="auth-container">
+  <!-- 页面头部 -->
+  <!-- <view class="auth-header">
+    <text class="header-title">实名认证</text>
+    <text class="header-subtitle">请填写真实信息并上传社区身份证明</text>
+  </view> -->
+  
+  <!-- 认证表单 -->
+  <view class="auth-form">
+    <!-- 真实姓名 -->
+    <view class="form-item">
+      <text class="form-label">真实姓名 *</text>
+      <input 
+        class="form-input" 
+        placeholder="请输入真实姓名" 
+        value="{{authForm.realName}}"
+        bindinput="onRealNameInput"
+      />
+    </view>
+    
+    <!-- 身份证号 -->
+    <view class="form-item">
+      <text class="form-label">身份证号 *</text>
+      <input 
+        class="form-input" 
+        placeholder="请输入身份证号码" 
+        value="{{authForm.idCard}}"
+        bindinput="onIdCardInput"
+      />
+    </view>
+    
+    <!-- 所在省市区 -->
+    <view class="form-item">
+      <text class="form-label">所在省市区 *</text>
+      <picker 
+        mode="multiSelector" 
+        range="{{regionRange}}"
+        range-key="name"
+        value="{{regionValue}}"
+        bindchange="onRegionChange"
+        bindcolumnchange="onColumnChange"
+      >
+        <view class="form-input form-picker {{selectedRegionText ? '' : 'placeholder'}}">
+          {{selectedRegionText || '请选择省市区'}}
+        </view>
+      </picker>
+    </view>
+    
+    <!-- 所在社区 -->
+    <view class="form-item">
+      <text class="form-label">所在社区 *</text>
+      <view class="community-hint" wx:if="{{!authForm.province}}">
+        <text>请先选择省市区</text>
+      </view>
+      <picker 
+        wx:if="{{authForm.province}}"
+        mode="selector" 
+        range="{{communityRange}}"
+        value="{{communityIndex}}"
+        bindchange="onCommunityChange"
+      >
+        <view class="form-input form-picker {{selectedCommunityText ? '' : 'placeholder'}}">
+          {{selectedCommunityText || '请选择社区'}}
+        </view>
+      </picker>
+    </view>
+    
+    <!-- 身份证明图片上传 -->
+    <view class="form-item">
+      <text class="form-label">社区身份证明 *</text>
+      <view class="identity-upload-area">
+        <view class="uploaded-images">
+          <view 
+            class="uploaded-image" 
+            wx:for="{{authForm.identityImages}}" 
+            wx:key="index"
+          >
+            <image 
+              class="image-preview" 
+              src="{{item}}" 
+              mode="aspectFill"
+              bindtap="onPreviewIdentityImage"
+              data-url="{{item}}"
+            ></image>
+            <view 
+              class="delete-btn" 
+              bindtap="onDeleteIdentityImage" 
+              data-index="{{index}}"
+            >×</view>
+          </view>
+          
+          <view 
+            class="upload-btn {{authForm.identityImages.length >= maxIdentityImages ? 'disabled' : ''}}" 
+            bindtap="onSelectIdentityImage"
+            wx:if="{{authForm.identityImages.length < maxIdentityImages}}"
+          >
+            <text class="upload-icon">+</text>
+            <text class="upload-text">上传证明</text>
+            <text class="upload-hint">{{authForm.identityImages.length}}/{{maxIdentityImages}}</text>
+          </view>
+        </view>
+        
+        <view class="upload-status" wx:if="{{uploadingIdentity}}">
+          <loading></loading>
+          <text>图片上传中...</text>
+        </view>
+      </view>
+      
+      <view class="identity-tips">
+        <text class="tip-item">• 请上传能够证明您所在社区身份的图片</text>
+        <text class="tip-item">• 如：门禁卡、物业缴费单、居委会证明等</text>
+        <text class="tip-item">• 图片需清晰可见相关信息</text>
+        <text class="tip-item">• 最多可上传{{maxIdentityImages}}张图片</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 认证须知 -->
+  <!-- <view class="auth-tips">
+    <text class="tip-title">认证须知：</text>
+    <text class="tip-item">• 认证信息一经提交不可修改</text>
+    <text class="tip-item">• 认证审核需要1-3个工作日</text>
+    <text class="tip-item">• 认证通过后方可发布内容</text>
+    <text class="tip-item">• 个人信息将严格保密</text>
+  </view> -->
+  
+  <!-- 底部操作按钮 -->
+  <view class="footer-actions">
+    <button 
+      class="submit-btn {{submitting ? 'disabled' : ''}}" 
+      bindtap="onSubmitAuth"
+      disabled="{{submitting}}"
+    >
+      <block wx:if="{{submitting}}">
+        提交中...
+      </block>
+      <block wx:else>
+        提交认证
+      </block>
+    </button>
+  </view>
+  
+  <!-- 加载状态 -->
+  <view class="loading-overlay" wx:if="{{loading}}">
+    <loading></loading>
+    <text>加载中...</text>
+  </view>
+</view>

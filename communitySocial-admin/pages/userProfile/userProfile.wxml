@@ -1,0 +1,240 @@
+<!--pages/dashboard/userProfile/userProfile.wxml-->
+<view class="user-profile-container">
+  <!-- 加载状态 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <view class="loading-content">
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+
+  <!-- 用户信息展示 -->
+  <view class="profile-content" wx:else>
+    <!-- 头像区域 -->
+    <view class="avatar-section">
+      <view class="avatar-wrapper" bindtap="onChooseAvatar">
+        <image class="avatar" src="{{avatarUrl || '/images/avatar.png'}}" mode="aspectFill"></image>
+        <view class="avatar-edit-tip" wx:if="{{isEditing}}">
+          <text class="tip-icon">📷</text>
+          <text class="tip-text">点击更换</text>
+        </view>
+      </view>
+      <view class="avatar-info">
+        <text class="username">{{userInfo.nickname || '未设置昵称'}}</text>
+        <!-- 用户角色：1 普通用户，2 社区管理员，3 超级管理员 -->
+        <text class="role-tag" wx:if="{{userInfo.userRole == 3}}">超级管理员</text>
+        <text class="role-tag" wx:elif="{{userInfo.userRole == 2}}">社区管理员</text>
+        <text class="role-tag" wx:else>普通用户</text>
+      </view>
+    </view>
+
+    <!-- 信息卡片 -->
+    <view class="info-card">
+      <view class="card-header">
+        <text class="card-title">基本信息</text>
+        <button class="edit-btn" wx:if="{{!isEditing}}" bindtap="onEdit">编辑</button>
+        <view class="action-btns" wx:else>
+          <button class="cancel-btn" bindtap="onCancelEdit">取消</button>
+          <button class="save-btn" bindtap="onSave">保存</button>
+        </view>
+      </view>
+
+      <view class="info-list">
+        <!-- 昵称 -->
+        <view class="info-item">
+          <text class="item-label">昵称</text>
+          <input class="item-value" 
+                 value="{{formData.nickname}}" 
+                 disabled="{{!isEditing}}"
+                 data-field="nickname"
+                 bindinput="onInput"
+                 placeholder="请输入昵称"/>
+        </view>
+
+        <!-- 手机号 -->
+        <view class="info-item">
+          <text class="item-label">手机号</text>
+          <view class="item-value-with-btn" wx:if="{{!isEditing}}">
+            <text class="item-value readonly phone-value">{{userInfo.phone || '未绑定'}}</text>
+            <button class="mini-btn" bindtap="onChangePhone">修改</button>
+          </view>
+          <input class="item-value" 
+                 wx:else
+                 value="{{formData.phone}}" 
+                 data-field="phone"
+                 bindinput="onInput"
+                 placeholder="请输入手机号"/>
+        </view>
+
+        <!-- 性别 -->
+        <view class="info-item">
+          <text class="item-label">性别</text>
+          <picker class="item-value" 
+                  mode="selector" 
+                  range="{{genderOptions}}" 
+                  range-key="label"
+                  value="{{formData.gender}}"
+                  disabled="{{!isEditing}}"
+                  bindchange="onGenderChange">
+            <view class="picker-value">
+              {{genderOptions[formData.gender].label}}
+              <text class="arrow" wx:if="{{isEditing}}">▼</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 个性签名 -->
+        <view class="info-item">
+          <text class="item-label">个性签名</text>
+          <input class="item-value" 
+                 value="{{formData.signature}}" 
+                 disabled="{{!isEditing}}"
+                 data-field="signature"
+                 bindinput="onInput"
+                 placeholder="请输入个性签名"/>
+        </view>
+
+        <!-- 所在地区（省市区合并显示） -->
+        <view class="info-item" wx:if="{{userInfo.province || userInfo.city || userInfo.district}}">
+          <text class="item-label">所在地区</text>
+          <text class="item-value readonly">{{userInfo.province || ''}}{{userInfo.city || ''}}{{userInfo.district || ''}}</text>
+        </view>
+
+        <!-- 所在社区 -->
+        <view class="info-item" wx:if="{{userInfo.community}}">
+          <text class="item-label">所在社区</text>
+          <text class="item-value readonly community-text">{{userInfo.community}}</text>
+        </view>
+
+        <!-- 注册时间（只读） -->
+        <view class="info-item">
+          <text class="item-label">注册时间</text>
+          <text class="item-value readonly" wx:if="{{formattedCreateTime}}">{{formattedCreateTime}}</text>
+          <text class="item-value readonly" wx:else>暂无数据</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 账号安全 -->
+    <view class="info-card">
+      <view class="card-header">
+        <text class="card-title">账号安全</text>
+      </view>
+      <view class="security-list">
+        <view class="security-item">
+          <view class="security-info">
+            <text class="security-label">修改密码</text>
+            <!-- <text class="security-desc">定期修改密码可以提高账号安全性</text> -->
+          </view>
+          <button class="action-btn" bindtap="onChangePassword">修改</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 账号状态 -->
+    <view class="info-card">
+      <view class="card-header">
+        <text class="card-title">账号状态</text>
+      </view>
+      <view class="status-list">
+        <!-- 账号状态：管理员 (0 禁用，1 正常，2 待审核)，普通用户 (3 正常，4 异常) -->
+        <view class="status-item">
+          <text class="status-label">账号状态：</text>
+          <text class="status-value status-normal" wx:if="{{userInfo.status == 1 || userInfo.status == 3}}">正常</text>
+          <text class="status-value status-banned" wx:elif="{{userInfo.status == 0}}">禁用</text>
+          <text class="status-value status-pending" wx:elif="{{userInfo.status == 2}}">待审核</text>
+          <text class="status-value status-abnormal" wx:elif="{{userInfo.status == 4}}">异常</text>
+        </view>
+        
+        <!-- 认证状态：0 未认证，1 审核中，2 已认证，3 认证失败 -->
+        <view class="status-item" wx:if="{{userInfo.authStatus !== null && userInfo.authStatus !== undefined}}">
+          <text class="status-label">认证状态：</text>
+          <text class="status-value status-auth-2" wx:if="{{userInfo.authStatus == 2}}">已认证</text>
+          <text class="status-value status-auth-1" wx:elif="{{userInfo.authStatus == 1}}">审核中</text>
+          <text class="status-value status-auth-0" wx:elif="{{userInfo.authStatus == 0}}">未认证</text>
+          <text class="status-value status-auth-3" wx:elif="{{userInfo.authStatus == 3}}">认证失败</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 退出登录 -->
+    <view class="info-card logout-card">
+      <button class="logout-btn" bindtap="onLogout">退出登录</button>
+    </view>
+  </view>
+
+  <!-- 返回按钮 -->
+  <!-- <view class="bottom-action">
+    <button class="back-btn" bindtap="onGoBack">返回</button>
+  </view> -->
+
+  <!-- 修改手机号弹窗 -->
+  <view class="modal-mask" wx:if="{{showChangePhoneModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">修改手机号</text>
+        <text class="modal-close" bindtap="onClosePhoneModal">×</text>
+      </view>
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">当前手机号</text>
+          <text class="form-value readonly">{{userInfo.phone || '未绑定'}}</text>
+        </view>
+        <view class="form-item">
+          <text class="form-label">新手机号</text>
+          <input class="form-input" 
+                 value="{{phoneFormData.newPhone}}" 
+                 bindinput="onPhoneInput"
+                 placeholder="请输入新手机号"
+                 maxlength="11"/>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-btn cancel" bindtap="onClosePhoneModal">取消</button>
+        <button class="modal-btn confirm" bindtap="onConfirmChangePhone">确定</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 修改密码弹窗 -->
+  <view class="modal-mask" wx:if="{{showChangePasswordModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">修改密码</text>
+        <text class="modal-close" bindtap="onClosePasswordModal">×</text>
+      </view>
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">原密码</text>
+          <input class="form-input" 
+                 value="{{passwordFormData.oldPassword}}" 
+                 bindinput="onPasswordInput"
+                 data-field="oldPassword"
+                 password="true"
+                 placeholder="请输入原密码"/>
+        </view>
+        <view class="form-item">
+          <text class="form-label">新密码</text>
+          <input class="form-input" 
+                 value="{{passwordFormData.newPassword}}" 
+                 bindinput="onPasswordInput"
+                 data-field="newPassword"
+                 password="true"
+                 placeholder="请输入新密码（6-20 个字符）"/>
+        </view>
+        <view class="form-item">
+          <text class="form-label">确认新密码</text>
+          <input class="form-input" 
+                 value="{{passwordFormData.confirmPassword}}" 
+                 bindinput="onPasswordInput"
+                 data-field="confirmPassword"
+                 password="true"
+                 placeholder="请再次输入新密码"/>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-btn cancel" bindtap="onClosePasswordModal">取消</button>
+        <button class="modal-btn confirm" bindtap="onConfirmChangePassword">确定</button>
+      </view>
+    </view>
+  </view>
+</view>

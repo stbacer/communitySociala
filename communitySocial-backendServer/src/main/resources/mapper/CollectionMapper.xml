@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.ccst.communitysocialmain.mapper.CollectionMapper">
+    
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.edu.ccst.communitysocialmain.entity.UserCollection">
+        <id column="collection_id" property="collectionId"/>
+        <result column="user_id" property="userId"/>
+        <result column="post_id" property="postId"/>
+        <result column="collect_time" property="collectTime"/>
+    </resultMap>
+    
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        collection_id, user_id, post_id, collect_time
+    </sql>
+    
+    <!-- 根据收藏ID查询 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM collection
+        WHERE collection_id = #{collectionId}
+    </select>
+    
+    <!-- 根据用户ID和帖子ID查询收藏 -->
+    <select id="selectByUserAndPost" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM collection
+        WHERE user_id = #{userId} AND post_id = #{postId}
+    </select>
+    
+    <!-- 根据用户ID查询收藏列表 -->
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM collection
+        WHERE user_id = #{userId}
+        ORDER BY collect_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据帖子ID查询收藏用户列表 -->
+    <select id="selectByPostId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM collection
+        WHERE post_id = #{postId}
+        ORDER BY collect_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 统计用户收藏数量 -->
+    <select id="countByUserId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM collection WHERE user_id = #{userId}
+    </select>
+    
+    <!-- 统计帖子被收藏数量 -->
+    <select id="countByPostId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM collection WHERE post_id = #{postId}
+    </select>
+    
+    <!-- 插入收藏 -->
+    <insert id="insert">
+        INSERT INTO collection (
+            collection_id, user_id, post_id, collect_time
+        ) VALUES (
+            #{collectionId}, #{userId}, #{postId}, #{collectTime}
+        )
+    </insert>
+    
+    <!-- 删除收藏 -->
+    <delete id="deleteById">
+        DELETE FROM collection
+        WHERE collection_id = #{collectionId}
+    </delete>
+    
+    <!-- 根据用户ID和帖子ID删除收藏 -->
+    <delete id="deleteByUserAndPost">
+        DELETE FROM collection
+        WHERE user_id = #{userId} AND post_id = #{postId}
+    </delete>
+    
+    <!-- 根据用户ID删除所有收藏 -->
+    <delete id="deleteByUserId">
+        DELETE FROM collection
+        WHERE user_id = #{userId}
+    </delete>
+    
+</mapper>

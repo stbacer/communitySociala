@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.ccst.communitysocialmain.mapper.FollowMapper">
+    
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.edu.ccst.communitysocialmain.entity.Follow">
+        <id column="follow_id" property="followId"/>
+        <result column="follower_id" property="followerId"/>
+        <result column="followed_id" property="followedId"/>
+        <result column="follow_time" property="followTime"/>
+    </resultMap>
+    
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        follow_id, follower_id, followed_id, follow_time
+    </sql>
+    
+    <!-- 根据关注 ID 查询 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM follow
+        WHERE follow_id = #{followId}
+    </select>
+    
+    <!-- 根据关注者和被关注者 ID 查询关注 -->
+    <select id="selectByFollowerAndFollowed" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM follow
+        WHERE follower_id = #{followerId} AND followed_id = #{followedId}
+    </select>
+    
+    <!-- 查询用户的关注列表 -->
+    <select id="selectFollowingByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM follow
+        WHERE follower_id = #{userId}
+        ORDER BY follow_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 查询用户的粉丝列表 -->
+    <select id="selectFollowerByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM follow
+        WHERE followed_id = #{userId}
+        ORDER BY follow_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 统计用户关注数量 -->
+    <select id="countFollowingByUserId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM follow WHERE follower_id = #{userId}
+    </select>
+    
+    <!-- 统计用户粉丝数量 -->
+    <select id="countFollowerByUserId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM follow WHERE followed_id = #{userId}
+    </select>
+    
+    <!-- 插入关注 -->
+    <insert id="insert">
+        INSERT INTO follow (
+            follow_id, follower_id, followed_id, follow_time
+        ) VALUES (
+            #{followId}, #{followerId}, #{followedId}, #{followTime}
+        )
+    </insert>
+    
+    <!-- 删除关注 -->
+    <delete id="deleteById">
+        DELETE FROM follow
+        WHERE follow_id = #{followId}
+    </delete>
+    
+    <!-- 根据关注者和被关注者 ID 删除关注 -->
+    <delete id="deleteByFollowerAndFollowed">
+        DELETE FROM follow
+        WHERE follower_id = #{followerId} AND followed_id = #{followedId}
+    </delete>
+    
+    <!-- 根据用户 ID 删除所有关注记录（作为关注者） -->
+    <delete id="deleteByFollowerId">
+        DELETE FROM follow
+        WHERE follower_id = #{followerId}
+    </delete>
+    
+    <!-- 根据用户 ID 删除所有关注记录（作为被关注者） -->
+    <delete id="deleteByFollowedId">
+        DELETE FROM follow
+        WHERE followed_id = #{followedId}
+    </delete>
+    
+</mapper>

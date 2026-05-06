@@ -1,0 +1,186 @@
+<!--pages/reportManage/reportDetail/reportDetail.wxml-->
+<view class="container">
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 举报详情内容 -->
+  <view wx:else class="report-detail">
+    <!-- 基本信息 -->
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">举报信息</text>
+        <view class="status-tag {{report.statusClass}}">{{report.statusText}}</view>
+      </view>
+      
+      <view class="info-list">
+        <view class="info-item">
+          <text class="info-label">举报 ID：</text>
+          <text class="info-value">{{report.reportId}}</text>
+        </view>
+        <view class="info-item">
+         <text class="info-label">举报类型：</text>
+         <text class="info-value">{{report.targetTypeText}}</text>
+       </view>
+       <view class="info-item">
+         <text class="info-label">举报时间：</text>
+         <text class="info-value">{{report.formattedReportTime || ''}}</text>
+       </view>
+       <view class="info-item" wx:if="{{report.handleTime}}">
+         <text class="info-label">处理时间：</text>
+         <text class="info-value">{{report.formattedHandleTime}}</text>
+       </view>
+      </view>
+    </view>
+
+    <!-- 举报人信息 -->
+    <view class="section">
+      <text class="section-title">举报人信息</text>
+      <view class="reporter-info" bindtap="goToReporterProfile">
+        <view class="info-row">
+          <text class="info-label">举报人：</text>
+          <text class="info-value link">{{report.reporterName || '未知'}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">举报人 ID：</text>
+          <text class="info-value">{{report.reporterId}}</text>
+        </view>
+        <text class="hint">点击查看详情</text>
+      </view>
+    </view>
+
+    <!-- 被举报内容 -->
+    <view class="section">
+      <text class="section-title">被举报内容</text>
+      <view class="target-content">
+        <view class="info-row">
+          <text class="info-label">内容类型：</text>
+          <text class="info-value">{{report.targetTypeText}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">内容 ID：</text>
+          <text class="info-value">{{report.targetId}}</text>
+        </view>
+        <view class="info-row">
+         <text class="info-label">内容：</text>
+         <text class="info-value content-text">{{report.targetContent && report.targetContent !== '内容获取失败' && report.targetContent !== '帖子已被删除或不存在' ? report.targetContent : ''}}</text>
+       </view>
+       <view class="info-row" wx:if="{{!report.targetContent || report.targetContent === '内容获取失败' || report.targetContent === '帖子已被删除或不存在'}}" style="color: #f0ad4e; font-size: 13px;">
+        <text>⚠️ 该内容暂时无法查看，可能已被删除</text>
+      </view>
+      </view>
+    </view>
+
+    <!-- 举报原因 -->
+    <view class="section">
+      <text class="section-title">举报原因</text>
+      <view class="reason-content">
+        <text class="reason-text">{{report.reason || '无'}}</text>
+      </view>
+    </view>
+
+    <!-- 图片证据（如果有） -->
+    <view class="section" wx:if="{{report.imagesArray && report.imagesArray.length > 0}}">
+      <text class="section-title">证据图片</text>
+      <view class="image-grid">
+        <view 
+          class="image-item" 
+          wx:for="{{report.imagesArray}}" 
+          wx:key="*this"
+          bindtap="previewImages"
+        data-images="{{report.imagesArray}}"
+        data-index="{{index}}"
+        >
+          <image class="image-thumb" src="{{item}}" mode="aspectFill" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 处理信息 -->
+   <view class="section" wx:if="{{report.status !== 0}}">
+     <text class="section-title">处理信息</text>
+     <view class="handle-info">
+       <view class="info-row">
+         <text class="info-label">处理人：</text>
+         <text class="info-value">{{report.handlerName || report.handlerId || '系统'}}</text>
+       </view>
+       <view class="info-row">
+        <text class="info-label">处理结果：</text>
+        <text class="info-value">{{report.handleResult || report.statusText}}</text>
+      </view>
+     </view>
+   </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons" wx:if="{{report.status === 0}}">
+      <button class="btn btn-secondary" bindtap="quickReject">快速驳回</button>
+      <button class="btn btn-primary" bindtap="showHandleModal">处理举报</button>
+    </view>
+  </view>
+
+  <!-- 处理模态框 -->
+  <view class="modal" wx:if="{{showHandleModal}}" catchtap="closeHandleModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">处理举报</text>
+        <text class="modal-close" bindtap="closeHandleModal">×</text>
+      </view>
+      
+      <view class="modal-body">
+        <view class="detail-section">
+          <text class="section-title">处理结果：</text>
+          <view class="status-buttons">
+            <button 
+              class="status-btn {{handleStatus === 1 ? 'active approved' : ''}}" 
+              bindtap="selectHandleStatus"
+             data-status="1"
+            >删除处理</button>
+            <button 
+              class="status-btn {{handleStatus === 2 ? 'active rejected' : ''}}" 
+              bindtap="selectHandleStatus"
+             data-status="2"
+            >驳回举报</button>
+          </view>
+        </view>
+        
+        <view class="result-section">
+          <text class="result-label">处理说明：</text>
+          <textarea 
+            class="result-input" 
+            placeholder="请输入处理说明..."
+            value="{{handleResult}}"
+            bindinput="onResultInput"
+            maxlength="200"
+          ></textarea>
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="btn btn-default" bindtap="closeHandleModal">取消</button>
+        <button class="btn btn-primary" bindtap="submitHandle">提交处理</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 图片预览 -->
+  <view class="image-preview" wx:if="{{showImagePreview}}" catchtap="closeImagePreview">
+    <view class="preview-content" catchtap="stopPropagation">
+      <swiper 
+        class="preview-swiper" 
+       current="{{currentPreviewIndex}}"
+        bindchange="onSwiperChange"
+      >
+        <swiper-item wx:for="{{previewImages}}" wx:key="*this">
+          <image class="preview-image" src="{{item}}" mode="aspectFit" />
+        </swiper-item>
+      </swiper>
+      <view class="preview-nav">
+        <text class="preview-prev" bindtap="prevImage">‹ 上一张</text>
+        <text class="preview-index">{{currentPreviewIndex + 1}} / {{previewImages.length}}</text>
+        <text class="preview-next" bindtap="nextImage">下一张 ›</text>
+      </view>
+      <text class="preview-close" bindtap="closeImagePreview">关闭</text>
+    </view>
+  </view>
+</view>

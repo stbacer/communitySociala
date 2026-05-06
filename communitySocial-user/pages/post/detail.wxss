@@ -1,0 +1,1078 @@
+/* pages/post/detail.wxss */
+.detail-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+.content-container {
+  flex: 1;
+}
+
+/* 帖子头部 */
+.post-header {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  background: white;
+  margin-bottom: 2rpx;
+}
+
+.author-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  margin-right: 20rpx;
+  background: #f5f5f5;
+}
+
+.author-info {
+  flex: 1;
+}
+
+.author-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 5rpx;
+}
+
+.post-time {
+  font-size: 22rpx;
+  color: #999;
+}
+
+/* 发消息按钮 */
+.send-message-btn {
+  padding: 8rpx 20rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 24rpx;
+  border-radius: 25rpx;
+  display: flex;
+  align-items: center;
+  gap: 5rpx;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.4);
+  transition: all 0.2s ease;
+}
+
+.send-message-btn:active {
+  opacity: 0.8;
+  transform: scale(0.95);
+}
+
+.post-type-tag {
+  padding: 5rpx 15rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  color: white;
+}
+
+.post-type-tag.type-1 {
+  background: #ff5722;
+}
+
+.post-type-tag.type-2 {
+  background: #4caf50;
+}
+
+.post-type-tag.type-3 {
+  background: #2196f3;
+}
+
+.post-type-tag.type-4 {
+  background: #9c27b0;
+}
+
+/* 帖子内容 */
+.post-content {
+  background: white;
+  padding: 30rpx;
+  margin-bottom: 2rpx;
+}
+
+.post-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 20rpx;
+  line-height: 1.4;
+}
+
+.post-text {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+  display: block;
+  margin-bottom: 20rpx;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.post-images {
+  margin: 20rpx 0;
+}
+
+.post-image {
+  width: 100%;
+  border-radius: 10rpx;
+  margin-bottom: 15rpx;
+  background: #f5f5f5;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+}
+
+.post-image:last-child {
+  margin-bottom: 0;
+}
+
+.post-location {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 15rpx;
+  padding-top: 15rpx;
+  border-top: 2rpx solid #f5f5f5;
+}
+
+.location-icon {
+  margin-right: 10rpx;
+}
+
+.location-text {
+  flex: 1;
+}
+
+.distance-text {
+  color: #1e88e5;
+}
+
+/* 发布时间 */
+.post-publish-time {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 15rpx;
+  padding-top: 15rpx;
+  border-top: 2rpx solid #f5f5f5;
+}
+
+.time-text {
+  flex: 1;
+}
+
+/* 二手交易信息区域 */
+.second-hand-info {
+  background: white;
+  padding: 30rpx;
+  margin-bottom: 2rpx;
+}
+
+.second-hand-info .section-title {
+  display: flex;
+  align-items: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 25rpx;
+  padding-bottom: 15rpx;
+  border-bottom: 2rpx solid #f5f5f5;
+}
+
+.section-icon {
+  margin-right: 10rpx;
+  font-size: 36rpx;
+}
+
+.trade-item {
+  display: flex;
+  align-items: center;
+  padding: 15rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.trade-item:last-child {
+  border-bottom: none;
+}
+
+.trade-label {
+  font-size: 26rpx;
+  color: #999;
+  width: 140rpx;
+  flex-shrink: 0;
+}
+
+.trade-value {
+  font-size: 28rpx;
+  color: #333;
+  flex: 1;
+}
+
+.price-section .trade-price {
+  font-size: 36rpx;
+  color: #ff5722;
+  font-weight: bold;
+}
+
+.contact-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.contact-value {
+  font-size: 28rpx;
+  color: #333;
+  flex: 1;
+}
+
+.copy-btn {
+  padding: 5rpx 15rpx;
+  font-size: 24rpx;
+  color: #1e88e5;
+  background: #e3f2fd;
+  border-radius: 20rpx;
+  margin-left: 15rpx;
+}
+
+.copy-btn:active {
+  opacity: 0.7;
+  transform: scale(0.95);
+}
+
+/* 立即购买按钮 */
+.buy-now-action {
+  margin-top: 30rpx;
+  padding-top: 30rpx;
+  border-top: 2rpx solid #f5f5f5;
+}
+
+.buy-now-btn {
+  width: 100%;
+  height: 90rpx;
+  line-height: 90rpx;
+  background: linear-gradient(135deg, #ff5722, #ff9800);
+  color: white;
+  font-size: 32rpx;
+  font-weight: bold;
+  border-radius: 45rpx;
+  box-shadow: 0 4rpx 12rpx rgba(255, 87, 34, 0.4);
+}
+
+.buy-now-btn:active {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+/* 用户头像点击效果 */
+.author-avatar, .comment-avatar {
+  transition: transform 0.2s ease;
+}
+
+.author-avatar:active, .comment-avatar:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+/* 帖子统计 */
+.post-stats {
+  display: flex;
+  background: white;
+  padding: 30rpx;
+  margin-bottom: 2rpx;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 5rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 帖子操作 */
+.post-actions {
+  display: flex;
+  background: white;
+  padding: 20rpx 15rpx;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 22rpx;
+  color: #666;
+  padding: 15rpx 10rpx;
+  min-width: 100rpx;
+}
+
+.action-btn.active {
+  color: #1e88e5;
+}
+
+.action-btn:active {
+  opacity: 0.7;
+  transform: scale(0.95);
+  transition: all 0.1s ease;
+}
+
+/* 编辑和删除按钮特殊样式 */
+.action-btn.edit-btn {
+  color: #4caf50;
+}
+
+.action-btn.delete-btn {
+  color: #f44336;
+}
+
+.action-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-bottom: 5rpx;
+}
+
+/* 评论区域 */
+.comments-section {
+  background: white;
+  margin-top: 20rpx;
+}
+
+.section-header {
+  padding: 25rpx 30rpx;
+  border-bottom: 2rpx solid #f5f5f5;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 评论列表 */
+.comments-list {
+  padding: 0 30rpx;
+}
+
+.comment-item {
+  padding: 25rpx 0;
+  border-bottom: 2rpx solid #f5f5f5;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.comment-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 30rpx;
+  margin-right: 15rpx;
+  background: #f5f5f5;
+}
+
+.comment-user-info {
+  flex: 1;
+}
+
+.comment-nickname {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 3rpx;
+}
+
+.comment-time {
+  font-size: 20rpx;
+  color: #999;
+}
+
+.comment-actions {
+  display: flex;
+  font-size: 22rpx;
+}
+
+.reply-btn, .edit-btn, .delete-btn, .report-btn {
+  margin-left: 20rpx;
+  padding: 5rpx 10rpx;
+  font-size: 22rpx;
+}
+
+.reply-btn {
+  color: #1e88e5;
+}
+
+.edit-btn {
+  color: #4caf50;
+}
+
+.delete-btn {
+  color: #f44336;
+}
+
+.report-btn {
+  color: #ff9800;
+}
+
+.comment-content {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.5;
+  margin-left: 75rpx;
+  margin-bottom: 15rpx;
+}
+
+.comment-text-wrapper {
+  position: relative;
+}
+
+.comment-text {
+  display: block;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.comment-text.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.expand-btn {
+  color: #1e88e5;
+  font-size: 22rpx;
+  margin-top: 10rpx;
+  display: inline-block;
+}
+
+.reply-to {
+  font-size: 22rpx;
+  color: #1e88e5;
+  background: #e3f2fd;
+  padding: 5rpx 10rpx;
+  border-radius: 10rpx;
+  margin-bottom: 10rpx;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reply-to:active {
+  background: #bbdefb;
+  transform: scale(0.98);
+  transition: all 0.1s ease;
+}
+
+.comment-footer {
+  margin-left: 75rpx;
+}
+
+.like-btn {
+  display: flex;
+  align-items: center;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.like-btn.active {
+  color: #1e88e5;
+}
+
+.like-btn:active {
+  opacity: 0.7;
+  transform: scale(0.95);
+  transition: all 0.1s ease;
+}
+
+.comment-actions text:active {
+  opacity: 0.7;
+  transform: scale(0.95);
+  transition: all 0.1s ease;
+}
+
+/* 评论项悬停效果 */
+.comment-item {
+  transition: background-color 0.2s ease;
+}
+
+.comment-item:active {
+  background-color: #f9f9f9;
+}
+
+.like-icon {
+  font-size: 26rpx;
+  margin-right: 5rpx;
+}
+
+/* 加载状态 */
+.load-more, .empty-state, .no-more {
+  text-align: center;
+  padding: 30rpx;
+  color: #999;
+  font-size: 26rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 15rpx;
+  display: block;
+}
+
+.empty-text {
+  font-size: 26rpx;
+}
+
+/* 评论输入框 */
+.comment-input-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.comment-input-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.comment-input-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 20rpx;
+  border-top-left-radius: 20rpx;
+  border-top-right-radius: 20rpx;
+  box-shadow: 0 -2rpx 20rpx rgba(0, 0, 0, 0.1);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.input-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.input-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.close-btn {
+  font-size: 36rpx;
+  color: #999;
+  padding: 10rpx;
+  font-weight: bold;
+}
+
+.close-btn:active {
+  color: #666;
+  transform: scale(1.2);
+  transition: all 0.1s ease;
+}
+
+.comment-textarea {
+  width: 100%;
+  height: 150rpx;
+  padding: 20rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  box-sizing: border-box;
+  margin-bottom: 20rpx;
+  resize: none;
+  background: #fafafa;
+}
+
+.comment-textarea:focus {
+  border-color: #1e88e5;
+  background: white;
+  outline: none;
+}
+
+
+
+/* 输入框工具栏 */
+.input-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10rpx 0;
+  border-top: 2rpx solid #f0f0f0;
+  margin-top: 10rpx;
+}
+
+.toolbar-left {
+  display: flex;
+  gap: 20rpx;
+}
+
+.emoji-btn {
+  font-size: 36rpx;
+  padding: 10rpx;
+  border-radius: 10rpx;
+}
+
+.emoji-btn:active {
+  background: #f0f0f0;
+  transform: scale(1.2);
+}
+
+.clear-btn {
+  color: #f44336;
+  font-size: 24rpx;
+  padding: 10rpx 20rpx;
+  border: 2rpx solid #f44336;
+  border-radius: 20rpx;
+}
+
+.clear-btn:active {
+  background: #f44336;
+  color: white;
+  transform: scale(0.95);
+}
+
+.input-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.char-count {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.char-count.warning {
+  color: #ff9800;
+}
+
+.char-count.exceed {
+  color: #f44336;
+}
+
+/* 按钮悬停和激活效果 */
+.submit-btn:not([disabled]):active {
+  transform: scale(0.95);
+  opacity: 0.8;
+  transition: all 0.1s ease;
+}
+
+.submit-btn {
+  background: #1e88e5;
+  color: white;
+  border: none;
+  border-radius: 30rpx;
+  padding: 15rpx 40rpx;
+  font-size: 26rpx;
+  min-width: 120rpx;
+  text-align: center;
+}
+
+.submit-btn::after {
+  border: none;
+}
+
+.submit-btn[disabled] {
+  background: #cccccc;
+}
+
+.submit-btn[disabled]:active {
+  transform: none;
+  opacity: 1;
+}
+
+.submit-btn.disabled {
+  background: #cccccc !important;
+  color: #999999 !important;
+  opacity: 0.6;
+}
+
+/* 举报弹窗 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.report-modal {
+  width: 80%;
+  background: white;
+  border-radius: 15rpx;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 2rpx solid #f5f5f5;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.modal-body {
+  padding: 30rpx;
+}
+
+.reason-title {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.reason-list {
+  max-height: 400rpx;
+  overflow-y: auto;
+}
+
+.reason-item {
+  padding: 20rpx;
+  margin-bottom: 15rpx;
+  background: #f5f5f5;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.reason-item.active {
+  background: #1e88e5;
+  color: white;
+}
+
+.modal-footer {
+  display: flex;
+  padding: 20rpx 30rpx 30rpx;
+  gap: 20rpx;
+}
+
+.cancel-btn, .confirm-btn {
+  flex: 1;
+  padding: 20rpx;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  text-align: center;
+}
+
+.cancel-btn {
+  background: #f5f5f5;
+  color: #666;
+  border: 2rpx solid #ddd;
+}
+
+.cancel-btn::after {
+  border: none;
+}
+
+.confirm-btn {
+  background: #1e88e5;
+  color: white;
+  border: none;
+}
+
+.confirm-btn::after {
+  border: none;
+}
+
+.confirm-btn[disabled] {
+  background: #cccccc;
+}
+
+/* ========== 二手交易信息样式 ========== */
+.second-hand-info {
+  background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+  border-radius: 15rpx;
+  padding: 25rpx;
+  margin: 20rpx 0;
+  border: 2rpx solid #ffc107;
+}
+
+.second-hand-info .section-title {
+  display: flex;
+  align-items: center;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-bottom: 15rpx;
+  border-bottom: 2rpx dashed #ffc107;
+}
+
+.section-icon {
+  margin-right: 10rpx;
+  font-size: 32rpx;
+}
+
+.trade-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15rpx 0;
+  margin-bottom: 10rpx;
+}
+
+.trade-item:last-child {
+  margin-bottom: 0;
+}
+
+.trade-label {
+  font-size: 26rpx;
+  color: #666;
+  min-width: 140rpx;
+}
+
+.price-section {
+  background: white;
+  padding: 20rpx;
+  border-radius: 10rpx;
+  margin-bottom: 15rpx !important;
+}
+
+.trade-price {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #f44336;
+  flex: 1;
+  text-align: right;
+}
+
+.trade-value {
+  font-size: 28rpx;
+  color: #333;
+  flex: 1;
+  text-align: right;
+  background: white;
+  padding: 10rpx 20rpx;
+  border-radius: 20rpx;
+}
+
+.contact-section {
+  background: white;
+  padding: 20rpx;
+  border-radius: 10rpx;
+}
+
+.contact-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.contact-value {
+  font-size: 28rpx;
+  color: #333;
+  flex: 1;
+  text-align: right;
+  margin-right: 20rpx;
+}
+
+.copy-btn {
+  background: linear-gradient(135deg, #1e88e5 0%, #2196f3 100%);
+  color: white;
+  padding: 10rpx 25rpx;
+  border-radius: 25rpx;
+  font-size: 24rpx;
+  font-weight: bold;
+  box-shadow: 0 4rpx 10rpx rgba(30, 136, 229, 0.3);
+}
+
+.copy-btn:active {
+  transform: scale(0.95);
+  opacity: 0.9;
+}
+
+/* 购买按钮特殊样式 */
+.buy-btn {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: white;
+  padding: 20rpx 30rpx;
+  border-radius: 30rpx;
+  margin: 10rpx;
+  animation: pulse 2s infinite;
+}
+
+.buy-btn .action-icon {
+  font-size: 36rpx;
+  margin-bottom: 5rpx;
+}
+
+.buy-btn text {
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* 举报弹窗 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.report-modal {
+  width: 90%;
+  max-width: 600rpx;
+  background: white;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.close-btn {
+  font-size: 40rpx;
+  color: #999;
+  padding: 10rpx;
+  font-weight: bold;
+}
+
+.close-btn:active {
+  color: #666;
+  transform: scale(1.2);
+  transition: all 0.1s ease;
+}
+
+.modal-body {
+  padding: 30rpx;
+}
+
+.reason-title {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 20rpx;
+  font-weight: 500;
+}
+
+.reason-input {
+  width: 100%;
+  min-height: 200rpx;
+  padding: 20rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.reason-input:focus {
+  border-color: #1e88e5;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 10rpx;
+}
+
+.modal-footer {
+  display: flex;
+  padding: 20rpx 30rpx 30rpx;
+  gap: 20rpx;
+}
+
+.cancel-btn,
+.confirm-btn {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 15rpx;
+  font-size: 30rpx;
+  text-align: center;
+}
+
+.cancel-btn {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.confirm-btn {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: white;
+}
+
+.confirm-btn[disabled] {
+  background: #ccc;
+  color: #999;
+}

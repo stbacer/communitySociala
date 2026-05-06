@@ -1,0 +1,92 @@
+<!--pages/login/account-login/account-login.wxml-->
+<view class="login-container">
+  <view class="logo-section">
+    <image class="logo" src="https://lyjsqsj.oss-cn-chengdu.aliyuncs.com/logo.png" mode="aspectFit"></image>
+    <text class="app-name">社区邻里</text>
+    <text class="app-slogan">账号密码登录</text>
+  </view>
+
+  <view class="form-section">
+    <view class="form-item">
+      <input 
+        class="input-field" 
+        type="text" 
+        placeholder="请输入手机号"
+        value="{{phoneNumber}}"
+        bindinput="onPhoneInput"
+        maxlength="11"
+      />
+    </view>
+
+    <view class="form-item">
+      <input 
+        class="input-field" 
+        type="password" 
+        placeholder="请输入密码"
+        value="{{password}}"
+        bindinput="onPasswordInput"
+        password="true"
+      />
+    </view>
+
+    <view class="form-item captcha-item">
+      <input 
+        class="input-field captcha-input" 
+        type="text" 
+        placeholder="请输入验证码"
+        value="{{captchaCode}}"
+        bindinput="onCaptchaInput"
+        maxlength="4"
+      />
+      <image 
+        class="captcha-image" 
+        src="{{captchaImage}}" 
+        mode="aspectFill"
+        bindtap="refreshCaptcha"
+      ></image>
+    </view>
+
+    <view class="form-options">
+      <text class="forget-password" bindtap="onForgetPassword">忘记密码？</text>
+    </view>
+
+    <button 
+      class="login-btn" 
+      type="primary" 
+      bindtap="onLoginTap"
+      disabled="{{isLoggingIn}}"
+    >
+      <block wx:if="{{!isLoggingIn}}">登录</block>
+      <block wx:else>
+        <loading class="loading-icon"></loading>登录中...
+      </block>
+    </button>
+
+    <view class="switch-login">
+      <text class="switch-text">还没有账号？</text>
+      <text class="switch-link" bindtap="onSwitchToRegist">去注册</text>
+    </view>
+
+    <view class="other-login">
+      <text class="other-text">其他登录方式</text>
+      <view class="other-icons">
+        <image 
+          class="other-icon" 
+          src="/images/wechat.png" 
+          mode="aspectFit"
+          bindtap="onWechatLogin"
+        ></image>
+      </view>
+    </view>
+  </view>
+
+  <view class="agreement-section">
+    <checkbox-group bindchange="onAgreeChange">
+      <label class="agreement-label">
+        <checkbox value="agree" checked="{{agreed}}"/>
+        <text class="agreement-text">我已阅读并同意</text>
+        <text class="agreement-link" bindtap="onViewAgreement">《用户协议》和《隐私政策》</text>
+      </label>
+    </checkbox-group>
+  </view>
+</view>

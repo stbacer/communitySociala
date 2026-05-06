@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.ccst.communitysocialmain.mapper.SystemConfigMapper">
+    
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.edu.ccst.communitysocialmain.entity.SystemConfig">
+        <id column="config_id" property="configId"/>
+        <result column="config_key" property="configKey"/>
+        <result column="config_value" property="configValue"/>
+        <result column="config_desc" property="description"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        config_id, config_key, config_value, config_desc, status, create_time, update_time
+    </sql>
+    
+    <!-- 根据配置键查询配置 -->
+    <select id="selectByKey" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM system_config
+        WHERE config_key = #{configKey}
+    </select>
+    
+    <!-- 查询所有启用的配置 -->
+    <select id="selectAllEnabled" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM system_config
+        WHERE status = 1
+        ORDER BY config_key
+    </select>
+    
+    <!-- 查询所有配置 -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM system_config
+        ORDER BY config_key
+    </select>
+    
+    <!-- 统计配置总数 -->
+    <select id="countAll" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM system_config
+    </select>
+    
+    <!-- 插入配置 -->
+    <insert id="insert">
+        INSERT INTO system_config (
+            config_key, config_value, config_desc, status, create_time, update_time
+        ) VALUES (
+            #{configKey}, #{configValue}, #{configDesc}, #{status}, #{createTime}, #{updateTime}
+        )
+    </insert>
+    
+    <!-- 更新配置 -->
+    <update id="update">
+        UPDATE system_config
+        <set>
+            <if test="configValue != null">config_value = #{configValue},</if>
+            <if test="configDesc != null">config_desc = #{configDesc},</if>
+            <if test="status != null">status = #{status},</if>
+            update_time = NOW()
+        </set>
+        WHERE config_id = #{configId}
+    </update>
+    
+    <!-- 更新配置状态 -->
+    <update id="updateStatus">
+        UPDATE system_config
+        SET status = #{status}, update_time = NOW()
+        WHERE config_id = #{configId}
+    </update>
+    
+    <!-- 根据配置键删除配置 -->
+    <delete id="deleteByKey">
+        DELETE FROM system_config
+        WHERE config_key = #{configKey}
+    </delete>
+    
+    <!-- 删除配置 -->
+    <delete id="deleteById">
+        DELETE FROM system_config
+        WHERE config_id = #{configId}
+    </delete>
+    
+</mapper>

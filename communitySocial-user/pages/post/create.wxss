@@ -1,0 +1,438 @@
+/* pages/post/create.wxss */
+.create-container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.section {
+  background: white;
+  border-radius: 15rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 25rpx;
+  padding-bottom: 15rpx;
+  border-bottom: 2rpx solid #f5f5f5;
+}
+
+/* 类型选择 */
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+}
+
+.type-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30rpx 20rpx;
+  border: 2rpx solid #eee;
+  border-radius: 15rpx;
+  background: #fafafa;
+}
+
+.type-item.active {
+  border-color: #1e88e5;
+  background: #e3f2fd;
+}
+
+.type-icon {
+  font-size: 48rpx;
+  margin-bottom: 15rpx;
+}
+
+.type-name {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.type-item.active .type-name {
+  color: #1e88e5;
+  font-weight: bold;
+}
+
+/* 输入框 */
+.form-input {
+  width: 100%;
+  padding: 20rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+  line-height: 1.5;
+  height: auto;
+}
+
+.title-input {
+  margin-bottom: 10rpx;
+  min-height: 80rpx;
+  line-height: 40rpx;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 200rpx;
+  max-height: 600rpx;
+  padding: 20rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+  resize: none;
+  line-height: 1.6;
+  overflow-y: auto;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 10rpx;
+}
+
+/* 图片上传 */
+.image-upload-area {
+  position: relative;
+}
+
+.uploaded-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15rpx;
+}
+
+.uploaded-image {
+  position: relative;
+  width: 180rpx;
+  height: 180rpx;
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+  border-radius: 10rpx;
+  background: #f5f5f5;
+}
+
+.delete-btn {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background: #f44336;
+  color: white;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.upload-btn {
+  width: 180rpx;
+  height: 180rpx;
+  border: 2rpx dashed #ddd;
+  border-radius: 10rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+}
+
+.upload-btn.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.upload-icon {
+  font-size: 48rpx;
+  color: #ccc;
+  margin-bottom: 10rpx;
+}
+
+.upload-text {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 5rpx;
+}
+
+.upload-hint {
+  font-size: 20rpx;
+  color: #bbb;
+}
+
+.upload-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx;
+  color: #666;
+  font-size: 26rpx;
+}
+
+.upload-status loading {
+  margin-right: 10rpx;
+}
+
+/* 位置选择 */
+.location-selector {
+  padding: 20rpx 0;
+}
+
+.selected-location {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  background: #f5f5f5;
+  border-radius: 10rpx;
+  margin-bottom: 15rpx;
+}
+
+.location-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clear-location {
+  width: 40rpx;
+  height: 40rpx;
+  background: #f44336;
+  color: white;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.select-location-btn {
+  width: 100%;
+  padding: 25rpx;
+  background: #1e88e5;
+  color: white;
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+}
+
+.select-location-btn::after {
+  border: none;
+}
+
+.btn-icon {
+  font-size: 32rpx;
+  margin-right: 10rpx;
+}
+
+.location-tip {
+  font-size: 22rpx;
+  color: #999;
+  line-height: 1.4;
+  margin-top: 10rpx;
+}
+
+/* 设置项 */
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+}
+
+.setting-label {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.setting-switch {
+  transform: scale(0.8);
+}
+
+.setting-desc {
+  font-size: 22rpx;
+  color: #999;
+  line-height: 1.4;
+  margin-top: 10rpx;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  padding: 20rpx;
+  background: white;
+  border-top: 2rpx solid #eee;
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.action-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 5rpx;
+}
+
+.reset-btn {
+  background: #f5f5f5;
+  color: #666;
+  border: 2rpx solid #ddd;
+}
+
+.reset-btn::after {
+  border: none;
+}
+
+.submit-btn {
+  background: #1e88e5;
+  color: white;
+  border: none;
+}
+
+.submit-btn::after {
+  border: none;
+}
+
+.submit-btn[disabled] {
+  background: #cccccc;
+}
+
+.save-draft-btn {
+  background: #ff9800;
+  color: white;
+  border: none;
+  flex: 0 0 160rpx;
+}
+
+.save-draft-btn::after {
+  border: none;
+}
+
+.loading-icon {
+  margin-right: 10rpx;
+}
+
+/* 页面状态提示 */
+.page-status {
+  padding: 20rpx;
+  background: #fff3cd;
+  border: 2rpx solid #ffeaa7;
+  border-radius: 10rpx;
+  margin: 20rpx;
+  text-align: center;
+}
+
+.error-message {
+  color: #856404;
+  font-size: 24rpx;
+}
+
+/* 加载遮罩 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loading-content {
+  background: white;
+  padding: 40rpx;
+  border-radius: 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 200rpx;
+}
+
+.loading-content text {
+  margin-top: 20rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 二手交易相关样式 */
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.form-item:last-child {
+  margin-bottom: 0;
+}
+
+.form-item-label {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 15rpx;
+  display: flex;
+  align-items: center;
+}
+
+.required-mark {
+  color: #f44336;
+  margin-right: 5rpx;
+  font-weight: bold;
+}
+
+.picker-display {
+  padding: 20rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+}
+
+.picker-display .arrow {
+  color: #999;
+  font-size: 24rpx;
+}
+
+.trade-tip {
+  margin-top: 20rpx;
+  padding: 20rpx;
+  background: #fff3cd;
+  border-left: 4rpx solid #ffc107;
+  border-radius: 5rpx;
+}
+
+.trade-tip text {
+  font-size: 24rpx;
+  color: #856404;
+  line-height: 1.6;
+}

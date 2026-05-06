@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.ccst.communitysocialmain.mapper.UserMapper">
+    
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.edu.ccst.communitysocialmain.entity.User">
+        <id column="user_id" property="userId"/>
+        <result column="nickname" property="nickname"/>
+        <result column="password" property="password"/>
+        <result column="avatar_url" property="avatarUrl"/>
+        <result column="openid" property="openid"/>
+        <result column="gender" property="gender"/>
+        <result column="phone" property="phone"/>
+        <result column="real_name" property="realName"/>
+        <result column="id_card" property="idCard"/>
+        <result column="signature" property="signature"/>
+        <result column="community" property="community"/>
+        <!-- 省市区字段 -->
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="district" property="district"/>
+        <result column="identity_images" property="identityImages" typeHandler="cn.edu.ccst.communitysocialmain.typehandler.DelimitedStringListTypeHandler"/>
+        <result column="user_role" property="userRole"/>
+        <result column="status" property="status"/>
+        <result column="auth_status" property="authStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        user_id, nickname, password, avatar_url, openid, gender, phone,
+        real_name, id_card, signature, community, province, city, district, identity_images, user_role, status, auth_status,
+        create_time, last_login_time, update_time
+    </sql>
+    
+    <!-- 根据用户ID查询 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE user_id = #{userId}
+    </select>
+    
+    <!-- 根据手机号查询用户 -->
+    <select id="selectByPhone" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE phone = #{phone}
+    </select>
+        
+    <!-- 根据微信 OpenID 查询用户 -->
+    <select id="selectByOpenId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE openid = #{openId}
+    </select>
+    
+    <!-- 查询所有用户（分页） -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据条件查询用户列表 -->
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        <where>
+            <if test="user.userId != null and user.userId != ''">
+                AND user_id = #{user.userId}
+            </if>
+            <if test="user.nickname != null and user.nickname != ''">
+                AND nickname LIKE CONCAT('%', #{user.nickname}, '%')
+            </if>
+            <if test="user.phone != null and user.phone != ''">
+                AND phone = #{user.phone}
+            </if>
+            <if test="user.community != null and user.community != ''">
+                AND community = #{user.community}
+            </if>
+            <if test="user.userRole != null">
+                AND user_role = #{user.userRole}
+            </if>
+            <if test="user.status != null">
+                AND status = #{user.status}
+            </if>
+            <if test="user.authStatus != null">
+                AND auth_status = #{user.authStatus}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 查询待审核的实名认证用户 -->
+    <select id="selectPendingAuthUsers" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE auth_status = 1
+        ORDER BY create_time ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 统计待审核用户总数 -->
+    <select id="countPendingAuthUsers" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM user WHERE auth_status = 1
+    </select>
+    
+    <!-- 根据社区查询待审核的实名认证用户列表 -->
+    <select id="selectPendingAuthUsersByCommunity" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE auth_status = 1 AND community = #{community}
+        ORDER BY create_time ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据社区统计待审核的实名认证用户数量 -->
+    <select id="countPendingAuthUsersByCommunity" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM user WHERE auth_status = 1 AND community = #{community}
+    </select>
+    
+    <!-- 统计用户总数 -->
+    <select id="countAll" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM user
+    </select>
+    
+    <!-- 根据条件统计用户数量 -->
+    <select id="countByCondition" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM user
+        <where>
+            <if test="user.userId != null and user.userId != ''">
+                AND user_id = #{user.userId}
+            </if>
+            <if test="user.nickname != null and user.nickname != ''">
+                AND nickname LIKE CONCAT('%', #{user.nickname}, '%')
+            </if>
+            <if test="user.phone != null and user.phone != ''">
+                AND phone = #{user.phone}
+            </if>
+            <if test="user.community != null and user.community != ''">
+                AND community = #{user.community}
+            </if>
+            <if test="user.userRole != null">
+                AND user_role = #{user.userRole}
+            </if>
+            <if test="user.status != null">
+                AND status = #{user.status}
+            </if>
+            <if test="user.authStatus != null">
+                AND auth_status = #{user.authStatus}
+            </if>
+        </where>
+    </select>
+    
+    <!-- 插入用户 -->
+   <insert id="insert">
+      INSERT INTO user(
+         user_id, nickname, password, avatar_url, openid, gender, phone,
+          real_name, id_card, signature, community, province, city, district, identity_images, user_role, status, auth_status,
+          create_time, last_login_time, update_time
+      ) VALUES (
+          #{userId}, #{nickname}, #{password}, #{avatarUrl}, #{openid}, #{gender}, #{phone},
+          #{realName}, #{idCard}, #{signature}, #{community}, #{province}, #{city}, #{district}, #{identityImages,typeHandler=cn.edu.ccst.communitysocialmain.typehandler.DelimitedStringListTypeHandler}, #{userRole}, #{status}, #{authStatus},
+          #{createTime}, #{lastLoginTime}, #{updateTime}
+      )
+   </insert>
+   
+   <!-- 更新用户信息 -->
+   <update id="update">
+      UPDATE user
+       <set>
+           <if test="nickname != null">nickname = #{nickname},</if>
+           <if test="password != null">password = #{password},</if>
+           <if test="avatarUrl != null">avatar_url = #{avatarUrl},</if>
+           <if test="openid != null">openid = #{openid},</if>
+           <if test="gender != null">gender= #{gender},</if>
+           <if test="phone != null">phone = #{phone},</if>
+           <if test="realName != null">real_name = #{realName},</if>
+           <if test="idCard != null">id_card = #{idCard},</if>
+           <if test="signature != null">signature = #{signature},</if>
+           <if test="community != null">community = #{community},</if>
+            <!-- 省市区字段 -->
+           <if test="province != null">province = #{province},</if>
+           <if test="city != null">city = #{city},</if>
+           <if test="district != null">district = #{district},</if>
+           <if test="identityImages != null">identity_images = #{identityImages,typeHandler=cn.edu.ccst.communitysocialmain.typehandler.DelimitedStringListTypeHandler},</if>
+           <if test="userRole != null">user_role = #{userRole},</if>
+           <if test="status != null">status = #{status},</if>
+           <if test="authStatus != null">auth_status = #{authStatus},</if>
+           <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
+           update_time = NOW()
+       </set>
+      WHERE user_id = #{userId}
+   </update>
+    
+    <!-- 更新最后登录时间 -->
+    <update id="updateLastLoginTime">
+        UPDATE user
+        SET last_login_time = NOW()
+        WHERE user_id = #{userId}
+    </update>
+    
+    <!-- 更新用户状态 -->
+    <update id="updateStatus">
+        UPDATE user
+        SET status = #{status}, update_time = NOW()
+        WHERE user_id = #{userId}
+    </update>
+    
+    <!-- 更新实名认证状态 -->
+    <update id="updateAuthStatus">
+        UPDATE user
+        SET auth_status = #{authStatus}, update_time = NOW()
+        WHERE user_id = #{userId}
+    </update>
+    
+    <!-- 删除用户 -->
+    <delete id="deleteById">
+        DELETE FROM user
+        WHERE user_id = #{userId}
+    </delete>
+    
+    <!-- 统计用户发布的帖子数量 -->
+    <select id="countUserPosts" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM post 
+        WHERE user_id = #{userId} AND status = 2
+    </select>
+    
+    <!-- 统计用户收到的点赞数量 -->
+    <select id="countUserReceivedLikes" resultType="java.lang.Long">
+        SELECT COALESCE(SUM(p.like_count), 0) 
+        FROM post p 
+        WHERE p.user_id = #{userId} AND p.status = 2
+    </select>
+    
+    <!-- 统计用户发表的评论数量 -->
+    <select id="countUserComments" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM comment 
+        WHERE user_id = #{userId}
+    </select>
+    
+    <!-- 统计用户收藏的帖子数量 -->
+    <select id="countUserCollections" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM collection 
+        WHERE user_id = #{userId}
+    </select>
+    
+    <!-- 统计指定时间段内的新增用户数 -->
+    <select id="countNewUsersInPeriod" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM user 
+        WHERE create_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+    
+    <!-- 统计指定时间段内的活跃用户数 -->
+    <select id="countActiveUsers" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT user_id) FROM (
+            SELECT user_id FROM post WHERE publish_time BETWEEN #{startTime} AND #{endTime}
+            UNION
+            SELECT user_id FROM comment WHERE comment_time BETWEEN #{startTime} AND #{endTime}
+        ) AS active_users
+    </select>
+    
+    <!-- 统计指定天数内的活跃用户数 -->
+    <select id="countActiveUsersInPeriod" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT user_id) FROM (
+            SELECT user_id FROM post WHERE publish_time >= DATE_SUB(NOW(), INTERVAL #{days} DAY)
+            UNION
+            SELECT user_id FROM comment WHERE comment_time >= DATE_SUB(NOW(), INTERVAL #{days} DAY)
+        ) AS active_users
+    </select>
+    
+    <!-- 根据用户角色统计用户数 -->
+    <select id="countByRole" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM user 
+        WHERE user_role = #{userRole}
+    </select>
+    
+    <!-- 根据用户状态统计用户数 -->
+    <select id="countByStatus" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM user 
+        WHERE status = #{status}
+    </select>
+    
+    <!-- 查询管理员列表 -->
+    <select id="selectAdmins" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE user_role IN (2, 3)
+        <if test="keyword != null and keyword != ''">
+            AND nickname LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY user_role DESC, create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 统计管理员数量 -->
+    <select id="countAdmins" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM user
+        WHERE user_role IN (2, 3)
+        <if test="keyword != null and keyword != ''">
+            AND nickname LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+    </select>
+    
+    <!-- 按社区分布统计用户数 -->
+    <select id="selectCommunityDistribution" resultType="java.util.Map">
+        SELECT 
+            community,
+            COUNT(*) as count
+        FROM user
+        GROUP BY community
+        ORDER BY count DESC
+    </select>
+    
+    <!-- 根据社区统计用户数量 -->
+    <select id="countUsersByCommunity" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM user
+        WHERE community = #{community}
+    </select>
+    
+    <!-- 根据社区查询用户列表 -->
+    <select id="selectByCommunity" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE community = #{community}
+        ORDER BY create_time DESC
+    </select>
+    
+    <!-- 根据社区和时间范围统计新增用户数量 -->
+    <select id="countNewUsersByCommunityAndTimeRange" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM user
+        WHERE community = #{community}
+          AND create_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+    
+    <!-- 统计社区总数（去重） -->
+    <select id="countDistinctCommunities" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT community) 
+        FROM user
+        WHERE community IS NOT NULL AND community != ''
+    </select>
+    
+    <!-- 根据时间范围查询有行为的用户 ID 列表（通用方法，支持多表） -->
+    <select id="selectUserIdsWithActionInTimeRange" resultType="java.util.Map">
+        SELECT DISTINCT ${userIdColumn} as user_id
+        FROM ${tableName}
+        WHERE ${timeColumn} BETWEEN #{startTime} AND #{endTime}
+    </select>
+    
+    <!-- 统计指定用户 ID 列表在指定时间范围内的活跃用户数 -->
+    <select id="countActiveUsersByIdsAndTimeRange" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT user_id) FROM (
+            SELECT user_id FROM post 
+            WHERE user_id IN
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+            AND publish_time BETWEEN #{startTime} AND #{endTime}
+            UNION
+            SELECT user_id FROM comment 
+            WHERE user_id IN
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+            AND comment_time BETWEEN #{startTime} AND #{endTime}
+        ) AS active_users
+    </select>
+    
+    <!-- 根据社区和时间范围查询登录过的用户 -->
+    <select id="selectUsersByLoginTimeRange" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE community = #{community}
+          AND last_login_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+    
+    <!-- 查询所有不同的社区名称 -->
+    <select id="selectDistinctCommunities" resultType="java.lang.String">
+        SELECT DISTINCT community 
+        FROM user
+        WHERE community IS NOT NULL AND community != ''
+        ORDER BY community
+    </select>
+    
+    <!-- 查询待审核的管理员实名认证列表（user_role=2 且 auth_status=1） -->
+    <select id="selectPendingAdminAuthList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE user_role = 2 AND auth_status = 1
+        <if test="keyword != null and keyword != ''">
+            AND (
+                real_name LIKE CONCAT('%', #{keyword}, '%')
+                OR phone LIKE CONCAT('%', #{keyword}, '%')
+                OR nickname LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY create_time ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 统计待审核的管理员实名认证数量 -->
+    <select id="countPendingAdminAuthList" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM user
+        WHERE user_role = 2 AND auth_status = 1
+        <if test="keyword != null and keyword != ''">
+            AND (
+                real_name LIKE CONCAT('%', #{keyword}, '%')
+                OR phone LIKE CONCAT('%', #{keyword}, '%')
+                OR nickname LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+    </select>
+    
+    <!-- 根据用户角色查询用户列表 -->
+    <select id="selectByUserRole" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE user_role = #{userRole}
+        ORDER BY create_time DESC
+    </select>
+    
+</mapper>

@@ -1,0 +1,129 @@
+<!--pages/login/regist/regist.wxml-->
+<view class="regist-container">
+  <view class="header-section">
+    <text class="title">创建新账号</text>
+    <text class="subtitle">填写以下信息完成注册</text>
+  </view>
+
+  <view class="form-section">
+    <!-- 手机号输入 -->
+    <view class="form-item">
+      <view class="input-label">
+        <text class="label-icon">📱</text>
+        <text class="label-text">手机号</text>
+      </view>
+      <input 
+        class="input-field" 
+        type="number" 
+        placeholder="请输入手机号"
+        value="{{phoneNumber}}"
+        bindinput="onPhoneInput"
+        maxlength="11"
+      />
+    </view>
+
+    <!-- 密码输入 -->
+    <view class="form-item">
+      <view class="input-label">
+        <text class="label-icon">🔒</text>
+        <text class="label-text">密码</text>
+      </view>
+      <input 
+        class="input-field" 
+        type="password" 
+        placeholder="请设置密码（至少 6 位）"
+        value="{{password}}"
+        bindinput="onPasswordInput"
+        password="true"
+      />
+    </view>
+
+    <!-- 确认密码输入 -->
+    <view class="form-item">
+      <view class="input-label">
+        <text class="label-icon">🔐</text>
+        <text class="label-text">确认密码</text>
+      </view>
+      <input 
+        class="input-field" 
+        type="password" 
+        placeholder="请再次输入密码"
+        value="{{confirmPassword}}"
+        bindinput="onConfirmPasswordInput"
+        password="true"
+      />
+    </view>
+
+    <!-- 昵称输入（必填） -->
+    <view class="form-item">
+      <view class="input-label">
+        <text class="label-icon">👤</text>
+        <text class="label-text">昵称</text>
+      </view>
+      <input 
+        class="input-field" 
+        type="text" 
+        placeholder="请输入昵称"
+        value="{{nickname}}"
+        bindinput="onNicknameInput"
+        maxlength="20"
+      />
+    </view>
+
+    <!-- 验证码输入 -->
+    <view class="form-item captcha-item">
+      <view class="input-label">
+        <text class="label-icon">🔒</text>
+        <text class="label-text">验证码</text>
+      </view>
+      <view class="captcha-input-wrapper">
+        <input 
+          class="input-field captcha-input" 
+          type="text" 
+          placeholder="请输入验证码"
+          value="{{captchaCode}}"
+          bindinput="onCaptchaInput"
+          maxlength="4"
+        />
+        <image 
+          class="captcha-image" 
+          src="{{captchaImage}}" 
+          mode="aspectFill"
+          bindtap="refreshCaptcha"
+        ></image>
+      </view>
+    </view>
+
+    <!-- 协议勾选 -->
+    <view class="agreement-section">
+      <checkbox-group bindchange="onAgreeChange">
+        <label class="agreement-label">
+          <checkbox value="agree" checked="{{agreed}}"/>
+          <text class="agreement-text">我已阅读并同意</text>
+          <text class="agreement-link" bindtap="onViewAgreement">《用户协议》和《隐私政策》</text>
+        </label>
+      </checkbox-group>
+    </view>
+
+    <!-- 注册按钮 -->
+    <button 
+      class="regist-btn" 
+      type="primary" 
+      bindtap="onRegisterTap"
+      disabled="{{!canSubmit || isRegistering}}"
+    >
+      <block wx:if="{{!isRegistering}}">
+        <text>{{canSubmit ? '立即注册' : '请填写完整信息'}}</text>
+      </block>
+      <block wx:else>
+        <loading class="loading-icon"></loading>注册中...
+      </block>
+    </button>
+
+    <!-- 返回登录 -->
+    <view class="back-to-login">
+      <text class="back-text">已有账号？</text>
+      <text class="back-link" bindtap="onBackToLogin">返回登录</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,271 @@
+/* pages/profile/account-settings/account-settings.wxss */
+
+.settings-container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.settings-section {
+  margin-bottom: 30rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.section-title {
+  padding: 30rpx 30rpx 20rpx;
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.item-label {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.item-value {
+  display: flex;
+  align-items: center;
+}
+
+.value-text {
+  font-size: 28rpx;
+  color: #999;
+  margin-right: 16rpx;
+}
+
+.signature-text {
+  max-width: 400rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.no-password {
+  color: #ff6b6b;
+}
+
+.arrow-icon {
+  font-size: 28rpx;
+  color: #ccc;
+}
+
+.tips-section {
+  margin: 30rpx;
+  padding: 30rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+}
+
+.tips-title {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 500;
+  margin-bottom: 16rpx;
+}
+
+.tips-item {
+  display: block;
+  font-size: 24rpx;
+  color: #999;
+  line-height: 2;
+}
+
+/* 弹窗样式 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 600rpx;
+  background-color: #fff;
+  border-radius: 20rpx;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 600;
+}
+
+.modal-close {
+  font-size: 48rpx;
+  color: #999;
+  line-height: 1;
+  padding: 0 10rpx;
+}
+
+.modal-body {
+  padding: 30rpx;
+}
+
+.modal-input {
+  width: 100%;
+  height: 80rpx;
+  font-size: 30rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+}
+
+.modal-textarea {
+  width: 100%;
+  min-height: 150rpx;
+  max-height: 300rpx;
+  font-size: 30rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  line-height: 1.6;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 10rpx;
+}
+
+.modal-footer {
+  display: flex;
+  padding: 0 30rpx 30rpx;
+  gap: 20rpx;
+}
+
+.modal-btn {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 30rpx;
+  border-radius: 12rpx;
+  border: none;
+}
+
+.cancel-btn {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.confirm-btn {
+  background-color: #07c160;
+  color: #fff;
+}
+
+.confirm-btn[disabled] {
+  background-color: #a0d8a0;
+  color: #fff;
+}
+
+.btn-disabled {
+  background-color: #ccc !important;
+  color: #fff !important;
+}
+
+/* 表单样式 */
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.form-item:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  font-size: 30rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+}
+
+/* 性别选择样式 */
+.gender-options {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.gender-option {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  transition: all 0.3s;
+}
+
+.gender-option.selected {
+  border-color: #07c160;
+  background-color: #f0fdf5;
+}
+
+.gender-icon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+}
+
+.gender-text {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.gender-check {
+  font-size: 36rpx;
+  color: #07c160;
+  font-weight: bold;
+}

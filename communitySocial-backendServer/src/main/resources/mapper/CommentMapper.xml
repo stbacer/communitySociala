@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.ccst.communitysocialmain.mapper.CommentMapper">
+    
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.edu.ccst.communitysocialmain.entity.Comment">
+        <id column="comment_id" property="commentId"/>
+        <result column="post_id" property="postId"/>
+        <result column="user_id" property="userId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="content" property="content"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="status" property="status"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="comment_time" property="commentTime"/>
+    </resultMap>
+    
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        comment_id, post_id, user_id, parent_id, content, image_url, status, like_count, comment_time
+    </sql>
+    
+    <!-- 根据评论ID查询 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM comment
+        WHERE comment_id = #{commentId}
+    </select>
+    
+    <!-- 根据帖子ID查询评论列表 -->
+    <select id="selectByPostId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM comment
+        WHERE post_id = #{postId} AND status = 1
+        ORDER BY comment_time ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据用户ID查询评论列表 -->
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM comment
+        WHERE user_id = #{userId} AND status = 1
+        ORDER BY comment_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 查询根评论 -->
+    <select id="selectRootComments" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM comment
+        WHERE post_id = #{postId} AND parent_id IS NULL AND status = 1
+        ORDER BY comment_time ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 统计帖子评论总数 -->
+    <select id="countByPostId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM comment WHERE post_id = #{postId} AND status = 1
+    </select>
+    
+    <!-- 统计用户评论总数 -->
+    <select id="countByUserId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM comment WHERE user_id = #{userId} AND status = 1
+    </select>
+    
+    <!-- 插入评论 -->
+    <insert id="insert">
+        INSERT INTO comment (
+            comment_id, post_id, user_id, parent_id, content, image_url, status, like_count, comment_time
+        ) VALUES (
+            #{commentId}, #{postId}, #{userId}, #{parentId}, #{content}, #{imageUrl}, #{status}, #{likeCount}, #{commentTime}
+        )
+    </insert>
+    
+    <!-- 更新评论 -->
+    <update id="update">
+        UPDATE comment
+        <set>
+            <if test="content != null">content = #{content},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE comment_id = #{commentId}
+    </update>
+    
+    <!-- 更新评论状态 -->
+    <update id="updateStatus">
+        UPDATE comment
+        SET status = #{status}
+        WHERE comment_id = #{commentId}
+    </update>
+    
+    <!-- 增加点赞数 -->
+    <update id="incrementLikeCount">
+        UPDATE comment
+        SET like_count = like_count + 1
+        WHERE comment_id = #{commentId}
+    </update>
+    
+    <!-- 减少点赞数 -->
+    <update id="decrementLikeCount">
+        UPDATE comment
+        SET like_count = like_count - 1
+        WHERE comment_id = #{commentId} AND like_count > 0
+    </update>
+    
+    <!-- 删除评论 -->
+    <update id="deleteById">
+        UPDATE comment
+        SET status = 0
+        WHERE comment_id = #{commentId}
+    </update>
+    
+    <!-- 根据帖子 ID 删除所有评论 -->
+    <update id="deleteByPostId">
+        UPDATE comment
+        SET status = 0
+        WHERE post_id = #{postId}
+    </update>
+    
+    <!-- 查询所有评论（管理员使用） -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM comment
+        ORDER BY comment_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据关键词搜索评论 -->
+    <select id="selectByKeyword" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM comment
+        WHERE content LIKE CONCAT('%', #{keyword}, '%')
+           OR user_id LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY comment_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 统计关键词搜索的评论数 -->
+    <select id="countByKeyword" resultType="long">
+        SELECT COUNT(*) FROM comment
+        WHERE content LIKE CONCAT('%', #{keyword}, '%')
+           OR user_id LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+    
+</mapper>

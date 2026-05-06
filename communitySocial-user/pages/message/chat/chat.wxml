@@ -1,0 +1,123 @@
+<!--pages/message/chat/chat.wxml-->
+<view class="chat-container">
+  <!-- 消息列表 -->
+  <scroll-view 
+    class="messages-scroll" 
+    scroll-y="true" 
+    scroll-with-animation="true"
+    scroll-into-view="{{scrollToView}}"
+    scroll-top="{{scrollTop}}"
+    enhanced="{{true}}"
+    show-scrollbar="{{true}}"
+    bindscrolltoupper="onScrollToUpper"
+    upper-threshold="50"
+  >
+    <view class="messages-list">
+      <!-- 加载更多提示 -->
+      <view class="load-more" wx:if="{{messageLoading}}">
+        <text>加载中...</text>
+      </view>
+      
+      <block wx:for="{{messages}}" wx:key="messageId">
+        <!-- 对方消息（左对齐） -->
+        <view 
+          class="message-row left" 
+          wx:if="{{item.senderId !== currentUserId}}"
+          id="{{'msg-' + index}}"
+        >
+          <image 
+            class="avatar" 
+            src="{{item.senderAvatarUrl || '/images/default-avatar.png'}}" 
+            mode="aspectFill"
+          ></image>
+          <view class="message-wrapper">
+            <text class="nickname">{{item.senderNickname || '未知用户'}}</text>
+            <view class="bubble white-bubble">
+              <!-- 图片消息 -->
+              <image 
+                wx:if="{{item.messageType === 2}}"
+                class="msg-image" 
+                src="{{item.content}}" 
+                mode="widthFix"
+                bindtap="previewImage"
+                data-url="{{item.content}}"
+              ></image>
+              <!-- 文本消息 -->
+              <text wx:else class="msg-text">{{item.content}}</text>
+            </view>
+            <text class="time-stamp left-time">{{item.formattedTime}}</text>
+          </view>
+        </view>
+
+        <!-- 自己消息（右对齐） -->
+        <view 
+          class="message-row right" 
+          wx:else
+          id="{{'msg-' + index}}"
+        >
+          <view class="message-wrapper right-wrapper">
+            <view class="bubble green-bubble">
+              <!-- 图片消息 -->
+              <image 
+                wx:if="{{item.messageType === 2}}"
+                class="msg-image" 
+                src="{{item.content}}" 
+                mode="widthFix"
+                bindtap="previewImage"
+                data-url="{{item.content}}"
+              ></image>
+              <!-- 文本消息 -->
+              <text wx:else class="msg-text">{{item.content}}</text>
+            </view>
+            <text class="time-stamp right-time">{{item.formattedTime}}</text>
+          </view>
+          <image 
+            class="avatar" 
+            src="{{userAvatar || '/images/default-avatar.png'}}" 
+            mode="aspectFill"
+          ></image>
+        </view>
+      </block>
+    </view>
+  </scroll-view>
+
+  <!-- 底部输入栏 -->
+  <view class="input-bar" wx:if="{{!isSystemNotification}}">
+    <!-- 第一行：图片按钮 -->
+    <view class="image-row">
+      <button 
+        class="image-btn" 
+        bindtap="chooseImage"
+        disabled="{{isSending}}"
+      >
+        📷
+      </button>
+    </view>
+    <!-- 第二行：输入框 + 发送按钮 -->
+    <view class="input-row">
+      <input 
+        class="text-input" 
+        placeholder="输入消息..." 
+        value="{{messageContent}}"
+        bindinput="onMessageInput"
+        bindconfirm="sendTextMessage"
+        confirm-type="send"
+        disabled="{{isSending}}"
+        adjust-position="{{true}}"
+        hold-keyboard="{{true}}"
+      />
+      <button 
+        class="send-btn {{canSend ? 'active' : ''}}" 
+        bindtap="sendTextMessage"
+        disabled="{{!canSend || isSending}}"
+      >
+        {{isSending ? '发送中...' : '发送'}}
+      </button>
+    </view>
+  </view>
+  
+  <!-- 系统通知提示 -->
+  <view class="system-tip" wx:if="{{isSystemNotification}}">
+    <text class="tip-text"></text>
+  </view>
+</view>

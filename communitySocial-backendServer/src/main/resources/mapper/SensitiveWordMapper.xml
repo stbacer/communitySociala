@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.ccst.communitysocialmain.mapper.SensitiveWordMapper">
+    
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.edu.ccst.communitysocialmain.entity.SensitiveWord">
+        <id column="word_id" property="wordId"/>
+        <result column="word" property="word"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        word_id, word, type, status, description, create_time, update_time
+    </sql>
+    
+    <!-- 查询所有启用的敏感词 -->
+    <select id="selectAllEnabled" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sensitive_word
+        WHERE status = 1
+        ORDER BY word ASC
+    </select>
+    
+    <!-- 检查敏感词是否存在 -->
+    <select id="exists" resultType="int">
+        SELECT COUNT(*) 
+        FROM sensitive_word 
+        WHERE word = #{word} AND status = 1
+    </select>
+    
+    <!-- 批量插入敏感词 -->
+    <insert id="batchInsert">
+        INSERT INTO sensitive_word (
+            word_id, word, type, status, create_time
+        ) VALUES 
+        <foreach collection="words" item="word" separator=",">
+            (#{word.wordId}, #{word.word}, #{word.type}, #{word.status}, #{word.createTime})
+        </foreach>
+    </insert>
+    
+    <!-- 更新敏感词状态 -->
+    <update id="updateStatus">
+        UPDATE sensitive_word
+        SET status = #{status}
+        WHERE word_id = #{wordId}
+    </update>
+    
+    <!-- 删除敏感词（软删除） -->
+    <update id="deleteById">
+        UPDATE sensitive_word
+        SET status = 0
+        WHERE word_id = #{wordId}
+    </update>
+    
+    <!-- 硬删除敏感词（物理删除） -->
+    <delete id="hardDeleteById">
+        DELETE FROM sensitive_word
+        WHERE word_id = #{wordId}
+    </delete>
+    
+    <!-- 统计敏感词数量 -->
+    <select id="countAll" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM sensitive_word WHERE status = 1
+    </select>
+    
+    <!-- 根据类型统计敏感词数量 -->
+    <select id="countByType" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM sensitive_word WHERE type = #{type} AND status = 1
+    </select>
+    
+    <!-- 根据ID查询敏感词 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sensitive_word
+        WHERE word_id = #{wordId}
+    </select>
+    
+    <!-- 根据敏感词查询 -->
+    <select id="selectByWord" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sensitive_word
+        WHERE word = #{word} AND status = 1
+    </select>
+    
+    <!-- 查询敏感词列表（分页，支持关键词搜索） -->
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sensitive_word
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND word LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="type != null and type != ''">
+                AND type = #{type}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY word_id ASC
+        <if test="limit != null and offset != null">
+            LIMIT #{offset}, #{limit}
+        </if>
+    </select>
+    
+    <!-- 统计符合条件的敏感词数量 -->
+    <select id="countByCondition" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM sensitive_word
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND word LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="type != null and type != ''">
+                AND type = #{type}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+    
+    <!-- 批量删除敏感词 -->
+    <update id="batchDelete">
+        UPDATE sensitive_word
+        SET status = 0
+        WHERE word_id IN
+        <foreach collection="wordIds" item="wordId" open="(" separator="," close=")">
+            #{wordId}
+        </foreach>
+    </update>
+    
+    <!-- 插入敏感词 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="wordId">
+        INSERT INTO sensitive_word (
+            word, type, status, description, create_time, update_time
+        ) VALUES (
+            #{word}, #{type}, #{status}, #{description}, #{createTime}, #{updateTime}
+        )
+    </insert>
+    
+    <!-- 更新敏感词 -->
+    <update id="update">
+        UPDATE sensitive_word
+        SET 
+            word = #{word},
+            type = #{type},
+            status = #{status},
+            description = #{description},
+            update_time = #{updateTime}
+        WHERE word_id = #{wordId}
+    </update>
+    
+
+    
+</mapper>

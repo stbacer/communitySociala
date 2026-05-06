@@ -1,0 +1,219 @@
+<!--pages/postManage/postDetail/postDetail.wxml-->
+<view class="container">
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <text class="loading-icon">⏳</text>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 帖子详情内容 -->
+  <view class="post-detail" wx:if="{{!loading && post}}">
+    <!-- 用户信息 -->
+    <view class="user-info-card card">
+      <view class="section-title">👤 发帖人信息</view>
+      <view class="user-detail" bindtap="viewUserProfile" data-user-id="{{post.userInfo.userId || post.userId}}">
+        <image class="user-avatar" src="{{post.userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+        <view class="user-details">
+          <view class="user-nickname">{{post.userInfo.nickname || '未知用户'}}</view>
+          <view class="user-meta">
+            <text class="meta-item">ID: {{post.userInfo.userId || post.userId || '未知'}}</text>
+          </view>
+        </view>
+        <view class="arrow-icon">›</view>
+      </view>
+    </view>
+  
+    <!-- 帖子基本信息 -->
+    <view class="post-header card">
+      <view class="post-title">{{post.title}}</view>
+      <view class="status-tag status-{{post.status}}">
+        {{getStatusText(post.status)}}
+      </view>
+    </view>
+
+    <!-- 二手交易特有信息 -->
+    <view class="secondhand-info card" wx:if="{{post.categoryId == 2}}">
+      <view class="section-title">🛒 二手交易信息</view>
+      <view class="info-grid">
+        <view class="info-item-full" wx:if="{{post.price}}">
+          <text class="label">💰 价格：</text>
+          <text class="value price-text">¥{{post.price}}</text>
+        </view>
+        <view class="info-item-full" wx:if="{{post.transactionMode}}">
+          <text class="label">🚚 交易方式：</text>
+          <text class="value">{{post.transactionMode == 1 ? '自提' : post.transactionMode == 2 ? '快递' : post.transactionMode == 3 ? '自提/快递均可' : '未设置'}}</text>
+        </view>
+        <view class="info-item-full" wx:if="{{post.contactInfo}}">
+          <text class="label">📞 联系方式：</text>
+          <text class="value contact-text">{{post.contactInfo}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 帖子内容 -->
+    <view class="post-content card">
+      <view class="section-title">📝 帖子内容</view>
+      <view class="content-text">{{post.content}}</view>
+      
+      <!-- 图片列表 -->
+      <view class="image-list" wx:if="{{post.imageUrls && post.imageUrls.length > 0}}">
+        <view 
+          class="image-item" 
+          wx:for="{{post.imageUrls}}" 
+          wx:key="index"
+          bindtap="previewImages"
+        data-images="{{post.imageUrls}}"
+        data-index="{{index}}"
+        >
+          <image class="post-image" src="{{item}}" mode="aspectFill"></image>
+        </view>
+      </view>
+    </view>
+
+    <!-- 位置信息 -->
+    <view class="location-info card" wx:if="{{post.longitude && post.latitude}}">
+      <view class="section-title">📍 发布位置</view>
+      <view class="location-text">
+        <text wx:if="{{addressText}}">{{addressText}}</text>
+        <text wx:else>定位中...</text>
+      </view>
+      <view class="location-coords" wx:if="{{addressText !== '未知位置'}}">
+        <text class="coords-label">坐标：</text>
+        <text class="coords-value">{{post.longitude.toFixed(6)}}, {{post.latitude.toFixed(6)}}</text>
+      </view>
+    </view>
+
+    <!-- 统计信息 -->
+    <view class="statistics card">
+      <view class="section-title">📊 统计信息</view>
+      <view class="stats-grid">
+        <view class="stat-item">
+          <text class="stat-label">👁️ 浏览数</text>
+          <text class="stat-value">{{post.viewCount || 0}}</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">👍 点赞数</text>
+          <text class="stat-value">{{post.likeCount || 0}}</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">💬 评论数</text>
+          <text class="stat-value">{{post.commentCount || 0}}</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">⭐ 收藏数</text>
+          <text class="stat-value">{{post.collectCount || 0}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 审核信息 -->
+    <view class="review-info card">
+      <view class="section-title">🔍 审核信息</view>
+      <view class="info-item">
+        <text class="label">审核人 ID：</text>
+        <text class="value">{{post.reviewerId || '未审核'}}</text>
+      </view>
+      <view class="info-item" wx:if="{{post.reviewTime}}">
+        <text class="label">审核时间：</text>
+        <text class="value">{{post.reviewTime}}</text>
+      </view>
+      <view class="info-item" wx:if="{{post.reviewRemark}}">
+        <text class="label">审核备注：</text>
+        <text class="value remark">{{post.reviewRemark}}</text>
+      </view>
+    </view>
+
+    <!-- 底部操作按钮 - 仅待审核帖子显示审核按钮，已通过帖子显示置顶按钮 -->
+    <view class="bottom-actions" wx:if="{{post.status === 1}}">
+      <button class="btn btn-danger" bindtap="showRejectModal">拒绝</button>
+      <button class="btn btn-success" bindtap="showApproveModal">通过</button>
+      <button class="btn btn-primary" bindtap="showReviewModal">详细审核</button>
+    </view>
+    
+    <!-- 已通过帖子的置顶按钮 -->
+    <view class="bottom-actions" wx:if="{{post.status === 2}}">
+      <button class="btn btn-primary" bindtap="toggleTopPost">{{post.isTop ? '取消置顶' : '置顶帖子'}}</button>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <!-- <view class="empty-state" wx:else>
+    <text class="empty-icon">😕</text>
+    <text class="empty-text">未找到帖子信息</text>
+    <button class="btn btn-primary" bindtap="goBack">返回列表</button>
+  </view> -->
+
+  <!-- 审核模态框 -->
+  <view class="modal-overlay" wx:if="{{showReviewModal}}" bindtap="closeReviewModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">审核帖子</text>
+        <text class="modal-close" bindtap="closeReviewModal">×</text>
+      </view>
+        
+      <view class="modal-body">
+        <view class="post-summary">
+          <text class="summary-label">帖子：</text>
+          <text class="summary-value">{{post.title}}</text>
+        </view>
+          
+        <view class="review-options">
+          <text class="option-title">审核结果：</text>
+          <view class="status-buttons">
+            <button 
+              class="status-btn {{reviewStatus === 2 ? 'active approved' : ''}}" 
+             bindtap="selectReviewStatus"
+            data-status="2"
+            >通过</button>
+            <button 
+              class="status-btn {{reviewStatus === 3 ? 'active rejected' : ''}}" 
+             bindtap="selectReviewStatus"
+            data-status="3"
+            >拒绝</button>
+          </view>
+        </view>
+          
+        <view class="remark-section">
+          <text class="remark-label">审核备注：</text>
+          <textarea 
+            class="remark-input" 
+           placeholder="请输入审核备注（选填）..."
+           value="{{reviewRemark}}"
+           bindinput="onRemarkInput"
+           maxlength="200"
+          ></textarea>
+        </view>
+      </view>
+        
+      <view class="modal-footer">
+        <button class="btn btn-default" bindtap="closeReviewModal">取消</button>
+        <button class="btn btn-primary" bindtap="submitReview">提交审核</button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 图片预览模态框 -->
+  <view class="image-preview-modal" wx:if="{{showImagePreview}}" bindtap="closeImagePreview">
+    <view class="preview-wrapper" catchtap="stopPropagation">
+      <swiper 
+        class="preview-swiper" 
+      current="{{currentPreviewIndex}}"
+        bindchange="onSwiperChange"
+      >
+        <swiper-item wx:for="{{previewImages}}" wx:key="index">
+          <image class="preview-image" src="{{item}}" mode="aspectFit"></image>
+        </swiper-item>
+      </swiper>
+        
+      <view class="preview-controls">
+        <view class="preview-counter">
+          {{currentPreviewIndex + 1}} / {{previewImages.length}}
+        </view>
+        <view class="preview-nav">
+          <view class="nav-btn" bindtap="prevImage" wx:if="{{previewImages.length > 1}}">◀</view>
+          <view class="nav-btn" bindtap="nextImage" wx:if="{{previewImages.length > 1}}">▶</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

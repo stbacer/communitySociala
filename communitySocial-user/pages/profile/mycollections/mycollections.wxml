@@ -1,0 +1,148 @@
+<!--pages/profile/mycollections/mycollections.wxml-->
+<view class="mycollections-container">
+  <!-- 页面头部 -->
+  <!-- <view class="header-section">
+    <view class="header-content">
+      <text class="back-btn" bindtap="onBack">←</text>
+      <text class="page-title">我的收藏</text>
+    </view>
+  </view> -->
+
+  <!-- 内容区域 -->
+  <scroll-view 
+    class="collections-scroll" 
+    scroll-y="true" 
+    bindscrolltolower="onScrollToLower"
+    lower-threshold="50"
+    refresher-enabled="true"
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh"
+  >
+    <!-- 加载状态 -->
+    <view class="loading-section" wx:if="{{loading && collections.length === 0}}">
+      <!-- 骨架屏效果 -->
+      <view class="skeleton-item" wx:for="{{[1,2,3]}}" wx:key="index">
+        <view class="skeleton-header">
+          <view class="skeleton-avatar"></view>
+          <view class="skeleton-info">
+            <view class="skeleton-line short"></view>
+            <view class="skeleton-line"></view>
+          </view>
+        </view>
+        <view class="skeleton-content">
+          <view class="skeleton-line"></view>
+          <view class="skeleton-line"></view>
+          <view class="skeleton-line short"></view>
+        </view>
+        <view class="skeleton-footer">
+          <view class="skeleton-line tiny"></view>
+          <view class="skeleton-actions">
+            <view class="skeleton-line tiny"></view>
+            <view class="skeleton-line tiny"></view>
+            <view class="skeleton-line tiny"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 收藏列表 -->
+    <view class="collections-list" wx:if="{{collections.length > 0}}">
+      <block wx:for="{{collections}}" wx:key="collectionId">
+        <view class="collection-item" bindtap="onCollectionTap" data-postid="{{item.postId}}">
+          <!-- 帖子类型标签 -->
+          <view class="post-type-tag {{item.type === 1 ? 'help-tag' : item.type === 2 ? 'share-tag' : 'info-tag'}}">
+            {{item.type === 1 ? '求助' : item.type === 2 ? '分享' : '资讯'}}
+          </view>
+
+          <!-- 帖子标题 -->
+          <view class="collection-title">
+            {{item.title}}
+          </view>
+
+          <!-- 帖子内容预览 -->
+          <view class="collection-preview">
+            {{item.content}}
+          </view>
+
+          <!-- 图片预览 -->
+          <view class="collection-images" wx:if="{{item.imageUrls && item.imageUrls.length > 0}}">
+            <block wx:for="{{item.imageUrls.slice(0, 3)}}" wx:key="index">
+              <image 
+                class="preview-image" 
+                src="{{item}}" 
+                mode="aspectFill"
+              ></image>
+            </block>
+            <view class="more-images" wx:if="{{item.imageUrls.length > 3}}">
+              <text>+{{item.imageUrls.length - 3}}</text>
+            </view>
+          </view>
+
+          <!-- 收藏时间 -->
+          <view class="collection-time">
+            <text class="time-label">收藏于:</text>
+            <text class="time-value">{{item.collectTime}}</text>
+          </view>
+
+          <!-- 帖子底部信息 -->
+          <view class="collection-footer">
+            <view class="collection-meta">
+              <view class="action-item">
+                <text class="icon">👁️</text>
+                <text class="count">{{item.viewCount}}</text>
+              </view>
+              <view class="action-item">
+                <text class="icon">👍</text>
+                <text class="count">{{item.likeCount}}</text>
+              </view>
+              <view class="action-item">
+                <text class="icon">💬</text>
+                <text class="count">{{item.commentCount}}</text>
+              </view>
+            </view>
+            <view class="collection-status {{item.status === 1 ? 'pending' : item.status === 2 ? 'approved' : 'rejected'}}">
+              {{item.status === 1 ? '审核中' : item.status === 2 ? '已通过' : '未通过'}}
+            </view>
+          </view>
+
+          <!-- 操作按钮 -->
+          <view class="collection-buttons">
+            <button 
+              class="btn btn-secondary" 
+              catchtap="onCancelCollect" 
+              data-postid="{{item.postId}}"
+              data-index="{{index}}"
+            >
+              取消收藏
+            </button>
+            <button 
+              class="btn btn-primary" 
+              catchtap="onViewPost" 
+              data-postid="{{item.postId}}"
+            >
+              查看详情
+            </button>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-section" wx:if="{{!loading && collections.length === 0}}">
+      <image class="empty-icon" src="/images/empty-collections.png" mode="aspectFit"></image>
+      <text class="empty-text">暂无收藏</text>
+      <text class="empty-subtext">快去收藏你感兴趣的帖子吧！</text>
+    </view>
+
+    <!-- 上拉加载更多 -->
+    <view class="load-more" wx:if="{{collections.length > 0}}">
+      <view wx:if="{{hasMore}}">
+        <loading></loading>
+        <text>正在加载更多...</text>
+      </view>
+      <view wx:else>
+        <text>没有更多了</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

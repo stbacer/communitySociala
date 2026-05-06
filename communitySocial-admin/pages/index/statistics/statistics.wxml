@@ -1,0 +1,163 @@
+<!--pages/statistics/statistics.wxml-->
+<view class="container">
+  <!-- 顶部统计卡片 -->
+  <view class="stats-header">
+    <view class="header-title">社区统计</view>
+    <view class="header-subtitle">{{communityName}}</view>
+  </view>
+
+  <!-- 主要统计数据 -->
+  <view class="main-stats">
+    <view class="stat-card">
+      <view class="stat-icon user-icon">👥</view>
+      <view class="stat-info">
+        <view class="stat-value">{{statistics.totalUsers || 0}}</view>
+        <view class="stat-label">总用户数</view>
+      </view>
+    </view>
+
+    <view class="stat-card">
+      <view class="stat-icon post-icon">📝</view>
+      <view class="stat-info">
+        <view class="stat-value">{{statistics.totalPosts || 0}}</view>
+        <view class="stat-label">总发帖量</view>
+      </view>
+    </view>
+
+    <view class="stat-card">
+      <view class="stat-icon pending-post-icon">⏳</view>
+      <view class="stat-info">
+        <view class="stat-value">{{statistics.pendingPosts || 0}}</view>
+        <view class="stat-label">待审核帖子</view>
+      </view>
+    </view>
+
+    <view class="stat-card">
+      <view class="stat-icon pending-user-icon">👤</view>
+      <view class="stat-info">
+        <view class="stat-value">{{statistics.pendingUsers || 0}}</view>
+        <view class="stat-label">待审核用户</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 今日新增 -->
+  <view class="today-stats">
+    <view class="section-title">今日数据</view>
+    <view class="today-cards">
+      <view class="today-card">
+        <view class="today-value">{{statistics.todayPosts || 0}}</view>
+        <view class="today-label">新增帖子</view>
+      </view>
+      <view class="today-card">
+        <view class="today-value">{{statistics.todayNewUsers || 0}}</view>
+        <view class="today-label">新增用户</view>
+      </view>
+      <view class="today-card dau-card-highlight">
+        <view class="today-value dau-value-large">{{statistics.todayActiveUsers || 0}}</view>
+        <view class="today-label">活跃用户 </view>
+        <view class="dau-trend-wrapper" wx:if="{{statistics.dauGrowthRate != null}}">
+          <!-- <view class="dau-trend {{statistics.dauGrowthRate > 0 ? 'trend-up' : statistics.dauGrowthRate < 0 ? 'trend-down' : ''}}">
+            <text class="trend-icon">{{statistics.dauGrowthRate > 0 ? '📈' : statistics.dauGrowthRate < 0 ? '📉' : '➖'}}</text>
+            <text class="trend-value">{{Math.abs(statistics.dauGrowthRate).toFixed(1)}}%</text>
+          </view>
+          <text class="trend-text">较昨日</text> -->
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 用户发帖排名 -->
+  <view class="user-rankings">
+    <view class="section-title">用户发帖排行榜</view>
+    <view class="rankings-list" wx:if="{{userRankings.length > 0}}">
+      <view class="ranking-item" wx:for="{{userRankings}}" wx:key="userId">
+        <view class="ranking-number {{index < 3 ? 'top-three' : ''}}">
+          <text wx:if="{{index === 0}}">🥇</text>
+          <text wx:elif="{{index === 1}}">🥈</text>
+          <text wx:elif="{{index === 2}}">🥉</text>
+          <text wx:else>{{index + 1}}</text>
+        </view>
+        <image class="ranking-avatar" src="{{item.avatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+        <view class="ranking-info">
+          <view class="ranking-name">{{item.userName}}</view>
+        </view>
+        <view class="ranking-count">{{item.postCount}} 篇</view>
+      </view>
+    </view>
+    <view class="empty-data" wx:else>
+      <text>暂无数据</text>
+    </view>
+  </view>
+
+  <!-- 热门板块分布 -->
+  <view class="category-section">
+    <view class="section-title">热门板块分布</view>
+    <view class="time-range-selector">
+      <button 
+        class="range-btn {{selectedRange === 'today' ? 'active' : ''}}" 
+        bindtap="changeTimeRange" 
+        data-range="today"
+      >今日</button>
+      <button 
+        class="range-btn {{selectedRange === 'week' ? 'active' : ''}}" 
+        bindtap="changeTimeRange" 
+        data-range="week"
+      >近一周</button>
+      <button 
+        class="range-btn {{selectedRange === 'month' ? 'active' : ''}}" 
+        bindtap="changeTimeRange" 
+        data-range="month"
+      >近一月</button>
+    </view>
+    
+    <!-- 扇形图容器 -->
+    <view class="pie-chart-container" wx:if="{{hotCategories.length > 0}}">
+      <view class="chart-wrapper">
+        <!-- 使用 canvas 绘制扇形图 -->
+        <canvas 
+          type="2d" 
+          id="pieChart" 
+          class="pie-chart-canvas"
+          style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+        ></canvas>
+      </view>
+      
+      <!-- 图例 -->
+      <view class="chart-legend">
+        <view class="legend-item" wx:for="{{hotCategories}}" wx:key="categoryId" wx:for-index="index">
+          <view class="legend-color" style="background-color: {{item.color}};"></view>
+          <view class="legend-info">
+            <text class="legend-name">{{item.categoryName}}</text>
+            <text class="legend-value">{{item.postCount}} 篇 ({{item.percentage}}%)</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="empty-state" wx:else>
+      <text>暂无板块数据</text>
+    </view>
+  </view>
+
+  <!-- 近 7 日活跃趋势图 -->
+  <view class="dau-trend-section">
+    <view class="section-title">近 7 日活跃趋势</view>
+    <view class="trend-chart-container">
+      <canvas 
+        type="2d" 
+        id="dauTrendCanvas" 
+        class="dau-trend-canvas"
+        style="width: 100%; height: 300px;"
+      ></canvas>
+    </view>
+    <view class="empty-state" wx:if="{{dauTrendData.length === 0}}">
+      <text>暂无趋势数据</text>
+    </view>
+  </view>
+
+  <!-- 加载提示 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

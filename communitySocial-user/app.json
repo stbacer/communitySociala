@@ -1,0 +1,71 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/login/account-login/account-login",
+    "pages/login/regist/regist",
+    "pages/login/forgot-password/forgot-password",
+    "pages/post/create",
+    "pages/post/detail",
+    "pages/profile/profile/profile",
+    "pages/message/conversation-list/conversation-list",
+    "pages/message/chat/chat",
+    "pages/profile/auth/auth",
+    "pages/profile/myposts/myposts",
+    "pages/profile/mycomments/mycomments",
+    "pages/profile/mycollections/mycollections",
+    "pages/profile/other/other",
+    "pages/profile/account-settings/account-settings"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1e88e5",
+    "navigationBarTitleText": "社区邻里",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#1e88e5",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "images/home.png",
+        "selectedIconPath": "images/home-active.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/post/create",
+        "iconPath": "images/add.png",
+        "selectedIconPath": "images/add-active.png",
+        "text": "发布"
+      },
+      {
+        "pagePath": "pages/message/conversation-list/conversation-list",
+        "iconPath": "images/message.png",
+        "selectedIconPath": "images/message-active.png",
+        "text": "消息"
+      },
+      {
+        "pagePath": "pages/profile/profile/profile",
+        "iconPath": "images/profile.png",
+        "selectedIconPath": "images/profile-active.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于发布内容时标记位置和附近帖子功能"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation",
+    "chooseLocation"
+  ],
+  "style": "v2",
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

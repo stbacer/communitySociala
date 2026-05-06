@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.ccst.communitysocialmain.mapper.ReportMapper">
+    
+    <resultMap id="BaseResultMap" type="cn.edu.ccst.communitysocialmain.entity.Report">
+        <id column="report_id" property="reportId"/>
+        <result column="reporter_id" property="reporterId"/>
+        <result column="target_type" property="targetType"/>
+        <result column="target_id" property="targetId"/>
+        <result column="reason" property="reason"/>
+        <result column="status" property="status"/>
+        <result column="handler_id" property="handlerId"/>
+        <result column="handle_time" property="handleTime"/>
+        <result column="handle_result" property="handleResult"/>
+        <result column="report_time" property="reportTime"/>
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+        report_id, reporter_id, target_type, target_id, reason, status, 
+        handler_id, handle_time, handle_result, report_time
+    </sql>
+    
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM report
+        WHERE report_id = #{reportId}
+    </select>
+    
+    <select id="selectByReporterId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM report
+        WHERE reporter_id = #{reporterId}
+        ORDER BY report_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="selectByTarget" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM report
+        WHERE target_type = #{targetType} AND target_id = #{targetId}
+        ORDER BY report_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="selectPendingReports" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM report
+        WHERE status = 0
+        ORDER BY report_time ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="countByReporterId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM report WHERE reporter_id = #{reporterId}
+    </select>
+    
+    <select id="countPendingReports" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM report WHERE status = 0
+    </select>
+    
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM report
+        ORDER BY report_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="selectByStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM report
+        WHERE status = #{status}
+        ORDER BY report_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="selectByKeyword" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM report
+        WHERE reason LIKE CONCAT('%', #{keyword}, '%')
+           OR target_id LIKE CONCAT('%', #{keyword}, '%')
+           OR reporter_id LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY report_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="countAll" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM report
+    </select>
+    
+    <select id="countByStatus" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM report WHERE status = #{status}
+    </select>
+    
+    <select id="countByKeyword" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM report
+        WHERE reason LIKE CONCAT('%', #{keyword}, '%')
+           OR target_id LIKE CONCAT('%', #{keyword}, '%')
+           OR reporter_id LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+    
+    <insert id="insert">
+        INSERT INTO report (
+            report_id, reporter_id, target_type, target_id, reason, status, report_time
+        ) VALUES (
+            #{reportId}, #{reporterId}, #{targetType}, #{targetId}, #{reason}, #{status}, NOW()
+        )
+    </insert>
+    
+    <update id="updateStatus">
+        UPDATE report
+        SET status = #{status},
+            handler_id = #{handlerId},
+            handle_time = NOW(),
+            handle_result = #{handleResult}
+        WHERE report_id = #{reportId}
+    </update>
+    
+    <delete id="deleteById">
+        DELETE FROM report WHERE report_id = #{reportId}
+    </delete>
+    
+</mapper>

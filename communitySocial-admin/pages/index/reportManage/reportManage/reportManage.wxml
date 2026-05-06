@@ -1,0 +1,182 @@
+<!-- pages/reportManage/reportManage.wxml -->
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input 
+      class="search-input" 
+      placeholder="搜索举报ID、举报人或内容关键词" 
+      value="{{searchKeyword}}"
+      bindinput="onSearchInput"
+    />
+    <button class="search-btn" bindtap="onSearch">搜索</button>
+    <button class="clear-btn" bindtap="clearSearch" wx:if="{{searchKeyword}}">清空</button>
+  </view>
+  
+  <!-- 标签页 -->
+  <view class="tabs">
+    <view 
+      class="tab-item {{activeTab === item.key ? 'active' : ''}}" 
+      wx:for="{{tabs}}" 
+      wx:key="key"
+      bindtap="switchTab"
+      data-tab="{{item.key}}"
+    >
+      {{item.name}}
+    </view>
+  </view>
+    
+  <!-- 举报列表 -->
+  <scroll-view class="report-list" scroll-y
+    refresher-enabled="true"
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh">
+    <view 
+      class="report-item card" 
+      wx:for="{{reportList}}" 
+      wx:key="reportId"
+    >
+      <view class="report-header">
+        <view class="report-info">
+          <text class="report-id">举报 ID: {{item.reportId}}</text>
+          <text class="report-time">{{formatTime(item.reportTime)}}</text>
+        </view>
+        <!-- 全部标签页显示处理状态 -->
+        <view class="report-status {{getStatusClass(item.status)}}" wx:if="{{activeTab === 'all'}}">
+          {{item.statusText}}
+        </view>
+      </view>
+      
+      <!-- 举报详情 -->
+      <view class="report-content" catchtap="goToReportDetail" data-report="{{item}}">
+        <view class="content-row">
+          <text class="label">举报人：</text>
+          <text class="value">{{item.reporterName}}</text>
+        </view>
+        
+        <view class="content-row">
+          <text class="label">举报类型：</text>
+          <text class="value">{{item.targetTypeText}}</text>
+        </view>
+        
+        <view class="content-row">
+          <text class="label">举报原因：</text>
+          <text class="value reason-text">{{item.reason}}</text>
+        </view>
+        
+        <view class="content-row">
+          <text class="label">被举报内容：</text>
+          <text class="value target-content" bindtap="goToTargetContent" data-report="{{item}}">{{item.targetContent}}</text>
+        </view>
+      </view>
+      
+      <!-- 处理记录 -->
+      <view class="handle-record" wx:if="{{item.status !== 0}}">
+        <view class="record-item">
+          <text class="record-label">处理人：</text>
+          <text class="record-value">{{item.handlerName || '系统管理员'}}</text>
+        </view>
+        <view class="record-item">
+          <text class="record-label">处理时间：</text>
+          <text class="record-value">{{item.handleTime}}</text>
+        </view>
+        <view class="record-item">
+          <text class="record-label">处理结果：</text>
+          <text class="record-value">{{item.handleResult || '已完成处理'}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{reportList.length === 0 && !loading}}">
+      <text class="empty-icon">⚠️</text>
+      <text class="empty-text">暂无相关举报</text>
+    </view>
+    
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{hasMore}}">
+      <text wx:if="{{loading}}">加载中...</text>
+      <text wx:else>上拉加载更多</text>
+    </view>
+  </scroll-view>
+
+  <!-- 处理模态框 -->
+  <view class="modal-overlay" wx:if="{{showHandleModal}}" bindtap="closeHandleModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">处理举报</text>
+        <text class="modal-close" bindtap="closeHandleModal">×</text>
+      </view>
+      
+      <view class="modal-body" wx:if="{{selectedReport}}">
+        <!-- 举报详情 -->
+        <view class="report-detail">
+          <view class="detail-section">
+            <text class="section-title">举报信息</text>
+            <view class="detail-item">
+              <text class="detail-label">举报ID：</text>
+              <text class="detail-value">{{selectedReport.reportId}}</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">举报人：</text>
+              <text class="detail-value">{{selectedReport.reporterName}}</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">举报时间：</text>
+              <text class="detail-value">{{formatTime(selectedReport.reportTime)}}</text>
+            </view>
+          </view>
+          
+          <view class="detail-section">
+            <text class="section-title">被举报内容</text>
+            <view class="detail-item">
+              <text class="detail-label">类型：</text>
+              <text class="detail-value">{{selectedReport.targetTypeText}}</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">内容：</text>
+              <text class="detail-value content-text">{{selectedReport.targetContent}}</text>
+            </view>
+          </view>
+          
+          <view class="detail-section">
+            <text class="section-title">举报原因</text>
+            <text class="reason-text">{{selectedReport.reason}}</text>
+          </view>
+        </view>
+        
+        <!-- 处理选项 -->
+        <view class="handle-options">
+          <text class="option-title">处理结果：</text>
+          <view class="status-buttons">
+            <button 
+              class="status-btn {{handleStatus === 1 ? 'active approved' : ''}}" 
+              bindtap="selectHandleStatus"
+              data-status="1"
+            >处理完成</button>
+            <button 
+              class="status-btn {{handleStatus === 2 ? 'active rejected' : ''}}" 
+              bindtap="selectHandleStatus"
+              data-status="2"
+            >驳回举报</button>
+          </view>
+        </view>
+        
+        <view class="result-section">
+          <text class="result-label">处理说明：</text>
+          <textarea 
+            class="result-input" 
+            placeholder="请输入处理说明..."
+            value="{{handleResult}}"
+            bindinput="onResultInput"
+            maxlength="200"
+          ></textarea>
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="btn btn-default" bindtap="closeHandleModal">取消</button>
+        <button class="btn btn-primary" bindtap="submitHandle">提交处理</button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.ccst.communitysocialmain.mapper.CollectionMapper">
+
+    <!-- 收藏统计查询 -->
+    
+    <!-- 统计收藏总数 -->
+    <select id="countAll" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM collection
+    </select>
+    
+    <!-- 统计指定时间段内的收藏数 -->
+    <select id="countByTimeRange" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM collection 
+        WHERE collect_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+</mapper>

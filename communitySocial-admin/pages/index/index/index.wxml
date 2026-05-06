@@ -1,0 +1,93 @@
+<!-- pages/dashboard/dashboard.wxml -->
+<view class="dashboard-container">
+  <!-- 快捷操作 -->
+  <view class="quick-actions card">
+    <text class="section-title">快捷操作</text>
+    <view class="actions-grid">
+      <button class="action-btn btn-primary" bindtap="goToUserAuth">
+        <text class="action-icon">👤</text>
+        <text class="action-text">认证审核</text>
+      </button>
+      
+      <button class="action-btn btn-success" bindtap="goToPostManage">
+        <text class="action-icon">📝</text>
+        <text class="action-text">帖子管理</text>
+      </button>
+      
+      <button class="action-btn btn-warning" bindtap="goToReportManage">
+        <text class="action-icon">⚠️</text>
+        <text class="action-text">举报处理</text>
+      </button>
+      
+      <button class="action-btn btn-info" bindtap="goToStatistics">
+        <text class="action-icon">📊</text>
+        <text class="action-text">社区统计</text>
+      </button>
+    </view>
+  </view>
+  <!-- 统计概览 -->
+  <view class="stats-overview">
+    <text class="section-title">数据概览</text>
+    <view class="stats-grid">
+
+      <view class="stat-item" bindtap="goToStatistics">
+        <view class="stat-icon icon-total"></view>
+        <view class="stat-content">
+          <text class="stat-number">{{stats.totalUsers}}</text>
+          <text class="stat-label">总用户数</text>
+        </view>
+      </view>
+
+      <view class="stat-item" bindtap="goToUserAuth">
+        <view class="stat-icon icon-users"></view>
+        <view class="stat-content">
+          <text class="stat-number">{{stats.pendingUsers}}</text>
+          <text class="stat-label">待审核用户</text>
+        </view>
+      </view>
+      
+      <view class="stat-item" bindtap="goToPostManage">
+        <view class="stat-icon icon-posts"></view>
+        <view class="stat-content">
+          <text class="stat-number">{{stats.pendingPosts}}</text>
+          <text class="stat-label">待审核帖子</text>
+        </view>
+      </view>
+      
+      <view class="stat-item" bindtap="goToReportManage">
+        <view class="stat-icon icon-reports"></view>
+        <view class="stat-content">
+          <text class="stat-number">{{stats.pendingReports}}</text>
+          <text class="stat-label">待处理举报</text>
+        </view>
+      </view>
+      
+
+      
+      <view class="stat-item" bindtap="goToUserAuth">
+        <view class="stat-icon icon-active"></view>
+        <view class="stat-content">
+          <text class="stat-number">{{stats.todayActiveUsers}}</text>
+          <text class="stat-label">今日活跃</text>
+        </view>
+      </view>
+      
+      <view class="stat-item" bindtap="goToPostManage">
+        <view class="stat-icon icon-today"></view>
+        <view class="stat-content">
+          <text class="stat-number">{{stats.todayPosts}}</text>
+          <text class="stat-label">今日新增</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  
+
+  <!-- 快捷操作 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <view class="loading-content">
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+</view>

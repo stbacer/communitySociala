@@ -1,0 +1,159 @@
+<!--pages/profile/myposts/myposts.wxml-->
+<view class="myposts-container">
+  <!-- 页面头部 -->
+  <!-- <view class="header-section">
+    <view class="header-content">
+      <text class="back-btn" bindtap="onBack">←</text>
+      <text class="page-title">我的帖子</text>
+      <button class="debug-btn" bindtap="onDebugTest" size="mini">调试</button>
+    </view>
+  </view> -->
+
+  <!-- 内容区域 -->
+  <scroll-view 
+    class="posts-scroll" 
+    scroll-y="true" 
+    bindscrolltolower="onScrollToLower"
+    lower-threshold="50"
+    refresher-enabled="true"
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh"
+  >
+    <!-- 调试信息显示 -->
+    <view class="debug-info" wx:if="{{showDebug}}">
+      <text>加载状态: {{loading}}</text>
+      <text>帖子数量: {{posts.length}}</text>
+      <text>当前页: {{currentPage}}</text>
+      <text>是否有更多: {{hasMore}}</text>
+      <button bindtap="onClearCache">清除缓存</button>
+      <button bindtap="onForceRefresh">强制刷新</button>
+    </view>
+    
+    <!-- 加载状态 -->
+    <view class="loading-section" wx:if="{{loading && posts.length === 0}}">
+      <!-- 骨架屏效果 -->
+      <view class="skeleton-item" wx:for="{{[1,2,3]}}" wx:key="index">
+        <view class="skeleton-header">
+          <view class="skeleton-avatar"></view>
+          <view class="skeleton-info">
+            <view class="skeleton-line short"></view>
+            <view class="skeleton-line"></view>
+          </view>
+        </view>
+        <view class="skeleton-content">
+          <view class="skeleton-line"></view>
+          <view class="skeleton-line"></view>
+          <view class="skeleton-line short"></view>
+        </view>
+        <view class="skeleton-footer">
+          <view class="skeleton-line tiny"></view>
+          <view class="skeleton-actions">
+            <view class="skeleton-line tiny"></view>
+            <view class="skeleton-line tiny"></view>
+            <view class="skeleton-line tiny"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 帖子列表 -->
+    <view class="posts-list" wx:if="{{posts.length > 0}}">
+      <block wx:for="{{posts}}" wx:key="postId" wx:if="{{item.status !== 0}}">
+        <view class="post-item" catchtap="onPostTap" data-postid="{{item.postId}}">
+          <!-- 帖子头部信息 -->
+          <view class="post-header">
+            <!-- <view class="post-type-tag {{item.type === 1 ? 'help-tag' : item.type === 2 ? 'share-tag' : 'info-tag'}}"> -->
+              <!-- {{item.type === 1 ? '求助' : item.type === 2 ? '分享' : '资讯'}} -->
+            <!-- </view> -->
+            <view class="post-status {{item.status === 1 ? 'pending' : item.status === 2 ? 'approved' : 'rejected'}}">
+              {{item.status === 1 ? '审核中' : item.status === 2 ? '已通过' : '未通过'}}
+            </view>
+          </view>
+
+          <!-- 帖子标题 -->
+          <view class="post-title">
+            {{item.title}}
+          </view>
+
+          <!-- 帖子内容预览 -->
+          <view class="post-preview">
+            {{item.content}}
+          </view>
+
+          <!-- 图片预览 -->
+          <view class="post-images" wx:if="{{item.imageUrls && item.imageUrls.length > 0}}">
+            <block wx:for="{{item.imageUrls.slice(0, 3)}}" wx:key="index">
+              <image 
+                class="preview-image" 
+                src="{{item}}" 
+                mode="aspectFill"
+              ></image>
+            </block>
+            <view class="more-images" wx:if="{{item.imageUrls.length > 3}}">
+              <text>+{{item.imageUrls.length - 3}}</text>
+            </view>
+          </view>
+
+          <!-- 帖子底部信息 -->
+          <view class="post-footer">
+            <view class="post-meta">
+              <text class="publish-time">{{item.publishTime}}</text>
+            </view>
+            <view class="post-actions">
+              <view class="action-item">
+                <text class="icon">👁️</text>
+                <text class="count">{{item.viewCount}}</text>
+              </view>
+              <view class="action-item">
+                <text class="icon">👍</text>
+                <text class="count">{{item.likeCount}}</text>
+              </view>
+              <view class="action-item">
+                <text class="icon">💬</text>
+                <text class="count">{{item.commentCount}}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 操作按钮 -->
+          <view class="post-buttons">
+            <button 
+              class="btn btn-secondary" 
+              catchtap="onDeletePost" 
+              data-postid="{{item.postId}}"
+              data-index="{{index}}"
+            >
+              删除
+            </button>
+            <button 
+              class="btn btn-primary" 
+              catchtap="onEditPost" 
+              data-postid="{{item.postId}}"
+            >
+              编辑
+            </button>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-section" wx:if="{{!loading && posts.length === 0}}">
+      <image class="empty-icon" src="/images/empty-posts.png" mode="aspectFit"></image>
+      <text class="empty-text">暂无帖子</text>
+      <text class="empty-subtext">快去发布你的第一个帖子吧！</text>
+      <button class="empty-btn" bindtap="onCreatePost">去发帖</button>
+    </view>
+
+    <!-- 上拉加载更多 -->
+    <view class="load-more" wx:if="{{posts.length > 0}}">
+      <view wx:if="{{hasMore}}">
+        <loading></loading>
+        <text>正在加载更多...</text>
+      </view>
+      <view wx:else>
+        <text>没有更多了</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

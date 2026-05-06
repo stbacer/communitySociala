@@ -1,0 +1,77 @@
+<!-- pages/login/login.wxml -->
+<view class="login-container">
+  <!-- Logo区域 -->
+  <view class="logo-section">
+    <image class="logo" src="/images/logo.png" mode="aspectFit"></image>
+    <text class="app-name">社区管理平台社区管理</text>
+    <!-- <text class="welcome-text">欢迎管理员登录</text> -->
+  </view>
+
+  <!-- 登录表单 -->
+  <view class="login-form">
+    <view class="form-item">
+      <text class="form-label">手机号</text>
+      <input 
+        class="form-input" 
+        type="number"
+        maxlength="11"
+        placeholder="请输入手机号" 
+        value="{{phone}}"
+        bindinput="onPhoneInput"
+      />
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">密码</text>
+      <input 
+        class="form-input" 
+        password 
+        placeholder="请输入密码" 
+        value="{{password}}"
+        bindinput="onPasswordInput"
+      />
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">验证码</text>
+      <view class="captcha-input-wrapper">
+        <input 
+          class="form-input captcha-input" 
+          type="text"
+          maxlength="4"
+          placeholder="请输入验证码" 
+          value="{{captchaInputValue}}"
+          bindinput="onCaptchaInput"
+        />
+        <image 
+          class="captcha-image" 
+          src="{{captchaImage}}" 
+          mode="aspectFill"
+          bindtap="refreshCaptcha"
+        ></image>
+      </view>
+    </view>
+    
+    <button 
+      class="login-btn {{loading ? 'btn-disabled' : ''}}" 
+      bindtap="onLogin"
+      disabled="{{loading}}"
+    >
+      {{loading ? '登录中...' : '登录'}}
+    </button>
+    
+    <!-- <view class="forget-password" bindtap="onForgetPassword">
+      忘记密码？
+    </view> -->
+    
+    <view class="register-link" bindtap="goToRegister">
+      还没有账号？立即注册
+    </view>
+  </view>
+
+  <!-- 底部信息 -->
+  <!-- <view class="footer-info">
+    <text class="copyright">© 2024 社区管理平台</text>
+    <text class="version">v1.0.0</text>
+  </view> -->
+</view>

@@ -1,0 +1,178 @@
+<!--pages/userAuth/authDetail/authDetail.wxml-->
+<view class="container">
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <text class="loading-icon">⏳</text>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 认证详情内容 -->
+  <view class="auth-detail" wx:else-if="{{authUser}}">
+    <!-- 用户基本信息 -->
+    <view class="user-profile card">
+      <view class="profile-header">
+        <image class="avatar" src="{{authUser.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" binderror="onAvatarLoadError"></image>
+        <view class="profile-info">
+          <text class="nickname">{{authUser.nickname}}</text>
+          <text class="username">@{{authUser.username}}</text>
+        </view>
+      </view>
+      
+      <view class="profile-divider"></view>
+      
+      <view class="info-section">
+        <view class="section-title">📋 认证信息</view>
+        
+        <view class="info-item">
+          <text class="label">真实姓名：</text>
+          <text class="value">{{authUser.realName}}</text>
+        </view>
+        
+        <view class="info-item">
+          <text class="label">身份证号：</text>
+          <text class="value">{{authUser.idCard}}</text>
+        </view>
+        
+        <view class="info-item">
+          <text class="label">所在省市区：</text>
+          <text class="value">{{authUser.province}}{{authUser.city}}{{authUser.district}}</text>
+        </view>
+        
+        <view class="info-item">
+          <text class="label">所在社区：</text>
+          <text class="value">{{authUser.community}}</text>
+        </view>
+        
+        <view class="info-item">
+          <text class="label">申请时间：</text>
+          <text class="value">{{authUser.formattedCreateTime}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 身份证明图片 -->
+    <view class="identity-proof card" wx:if="{{authUser.identityImagesArray && authUser.identityImagesArray.length> 0}}">
+      <view class="section-title">📸 身份证明</view>
+      
+      <view class="images-grid">
+        <view 
+          class="image-item" 
+          wx:for="{{authUser.identityImagesArray}}" 
+          wx:key="index"
+          bindtap="previewIdentityImages"
+         data-images="{{authUser.identityImagesArray}}"
+         data-index="{{index}}"
+        >
+          <image class="proof-image" src="{{item}}" mode="aspectFill"></image>
+          <text class="image-index">{{index + 1}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 其他信息 -->
+    <view class="other-info card">
+      <view class="section-title">ℹ️ 其他信息</view>
+      
+      <view class="info-item">
+        <text class="label">用户 ID：</text>
+        <text class="value">{{authUser.userId}}</text>
+      </view>
+      
+      <view class="info-item" wx:if="{{authUser.phone}}">
+        <text class="label">手机号：</text>
+        <text class="value">{{authUser.phone}}</text>
+      </view>
+      
+      <view class="info-item" wx:if="{{authUser.email}}">
+        <text class="label">邮箱：</text>
+        <text class="value">{{authUser.email}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">性别：</text>
+        <text class="value">{{authUser.gender == 1 ? '男' : (authUser.gender == 2 ? '女' : '未知')}}</text>
+      </view>
+
+      <!-- 底部操作按钮 -->
+      <view class="bottom-actions">
+        <button class="btn btn-danger" bindtap="showRejectModal">拒绝</button>
+        <button class="btn btn-success" bindtap="showApproveModal">通过</button>
+        <button class="btn btn-primary" bindtap="showReviewModal">详细审核</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 审核模态框 -->
+  <view class="modal-overlay" wx:if="{{showReviewModal}}" bindtap="closeReviewModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">审核认证申请</text>
+        <text class="modal-close" bindtap="closeReviewModal">×</text>
+      </view>
+        
+      <view class="modal-body">
+        <view class="user-summary">
+          <text class="summary-label">用户：</text>
+          <text class="summary-value">{{authUser.realName}} ({{authUser.nickname}})</text>
+        </view>
+          
+        <view class="review-options">
+          <text class="option-title">审核结果：</text>
+          <view class="status-buttons">
+            <button 
+              class="status-btn {{reviewStatus === 2 ? 'active approved' : ''}}" 
+              bindtap="selectReviewStatus"
+             data-status="2"
+            >通过</button>
+            <button 
+              class="status-btn {{reviewStatus === 3 ? 'active rejected' : ''}}" 
+              bindtap="selectReviewStatus"
+             data-status="3"
+            >拒绝</button>
+          </view>
+        </view>
+          
+        <view class="remark-section">
+          <text class="remark-label">审核备注：</text>
+          <textarea 
+            class="remark-input" 
+            placeholder="请输入审核备注（选填）..."
+            value="{{reviewRemark}}"
+            bindinput="onRemarkInput"
+            maxlength="200"
+          ></textarea>
+        </view>
+      </view>
+        
+      <view class="modal-footer">
+        <button class="btn btn-default" bindtap="closeReviewModal">取消</button>
+        <button class="btn btn-primary" bindtap="submitReview">提交审核</button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 图片预览模态框 -->
+  <view class="image-preview-modal" wx:if="{{showImagePreview}}" bindtap="closeImagePreview">
+    <view class="preview-wrapper" catchtap="stopPropagation">
+      <swiper 
+        class="preview-swiper" 
+       current="{{currentPreviewIndex}}"
+        bindchange="onSwiperChange"
+      >
+        <swiper-item wx:for="{{previewImages}}" wx:key="index">
+          <image class="preview-image" src="{{item}}" mode="aspectFit"></image>
+        </swiper-item>
+      </swiper>
+        
+      <view class="preview-controls">
+        <view class="preview-counter">
+          {{currentPreviewIndex + 1}} / {{previewImages.length}}
+        </view>
+        <view class="preview-nav">
+          <view class="nav-btn" bindtap="prevImage" wx:if="{{previewImages.length > 1}}">◀</view>
+          <view class="nav-btn" bindtap="nextImage" wx:if="{{previewImages.length > 1}}">▶</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

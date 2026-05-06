@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.ccst.communitysocialmain.mapper.PrivateMessageMapper">
+    
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.edu.ccst.communitysocialmain.entity.PrivateMessage">
+        <id column="message_id" property="messageId"/>
+        <result column="sender_id" property="senderId"/>
+        <result column="receiver_id" property="receiverId"/>
+        <result column="content" property="content"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="message_type" property="messageType"/>
+        <result column="status" property="status"/>
+        <result column="send_time" property="sendTime"/>
+    </resultMap>
+    
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        message_id, sender_id, receiver_id, content, image_url, message_type, status, send_time
+    </sql>
+    
+    <!-- 根据消息ID查询 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM private_message
+        WHERE message_id = #{messageId}
+    </select>
+    
+    <!-- 查询用户之间的私信对话列表 -->
+    <select id="selectConversation" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM private_message
+        WHERE (sender_id = #{userId1} AND receiver_id = #{userId2})
+           OR (sender_id = #{userId2} AND receiver_id = #{userId1})
+        ORDER BY send_time ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 查询用户的私信列表（按最新消息排序） -->
+    <select id="selectUserMessages" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM private_message
+        WHERE sender_id = #{userId} OR receiver_id = #{userId}
+        ORDER BY send_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 查询未读消息数量 -->
+    <select id="countUnreadMessages" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM private_message 
+        WHERE receiver_id = #{userId} AND status = 1
+    </select>
+    
+    <!-- 统计两个用户之间的消息总数 -->
+    <select id="countConversationMessages" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM private_message
+        WHERE (sender_id = #{userId1} AND receiver_id = #{userId2})
+           OR (sender_id = #{userId2} AND receiver_id = #{userId1})
+    </select>
+    
+    <!-- 插入私信 -->
+    <insert id="insert">
+        INSERT INTO private_message (
+            message_id, sender_id, receiver_id, content, image_url, message_type, status, send_time
+        ) VALUES (
+            #{messageId}, #{senderId}, #{receiverId}, #{content}, #{imageUrl}, #{messageType}, #{status}, #{sendTime}
+        )
+    </insert>
+    
+    <!-- 更新消息状态 -->
+    <update id="updateStatus">
+        UPDATE private_message
+        SET status = #{status}
+        WHERE message_id = #{messageId}
+    </update>
+    
+    <!-- 批量更新消息状态为已读 -->
+    <update id="batchUpdateToRead">
+        UPDATE private_message
+        SET status = 2
+        WHERE receiver_id = #{receiverId} 
+          AND sender_id = #{senderId} 
+          AND status = 1
+    </update>
+    
+    <!-- 删除消息 -->
+    <update id="deleteById">
+        UPDATE private_message
+        SET status = 0
+        WHERE message_id = #{messageId}
+    </update>
+    
+    <!-- 撤回消息 -->
+    <update id="recallMessage">
+        UPDATE private_message
+        SET status = 0, content = '[消息已撤回]', image_url = NULL
+        WHERE message_id = #{messageId}
+    </update>
+    
+    <!-- 查询所有消息（管理员使用） -->
+    <select id="selectAllMessages" resultType="cn.edu.ccst.communitysocialmain.entity.PrivateMessage">
+        SELECT * FROM private_message
+        ORDER BY send_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 统计会话中的未读消息数 -->
+    <select id="countUnreadInConversation" resultType="long">
+        SELECT COUNT(*) FROM private_message
+        WHERE ((sender_id = #{userId1} AND receiver_id = #{userId2})
+           OR (sender_id = #{userId2} AND receiver_id = #{userId1}))
+          AND status = 1
+    </select>
+    
+</mapper>

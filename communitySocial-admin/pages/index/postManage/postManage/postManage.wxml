@@ -1,0 +1,220 @@
+<!-- pages/postManage/postManage.wxml -->
+<view class="container">
+  <!-- 搜索筛选区域 -->
+  <view class="search-filter">
+    <!-- <view class="search-box">
+      <input 
+        class="search-input" 
+        placeholder="搜索帖子标题或内容" 
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearch"
+      />
+      <button class="search-btn" bindtap="onSearch">搜索</button>
+    </view> -->
+    
+    <view class="filter-row">
+      <picker 
+        class="type-picker" 
+        mode="selector" 
+        range="{{categories}}" 
+        range-key="name"
+        value="{{selectedCategoryIndex}}"
+        bindchange="onTypeChange"
+      >
+        <view class="picker-display">
+          {{categories[selectedCategoryIndex] ? categories[selectedCategoryIndex].name : '选择板块'}}
+        </view>
+      </picker>
+      <button class="reset-btn" bindtap="resetSearch">重置</button>
+    </view>
+  </view>
+  
+  <!-- 标签页 -->
+  <view class="tabs">
+    <view 
+      class="tab-item {{activeTab === item.key ? 'active' : ''}}" 
+      wx:for="{{tabs}}" 
+      wx:key="key"
+      bindtap="switchTab"
+      data-tab="{{item.key}}"
+    >
+      {{item.name}}
+    </view>
+  </view>
+    
+  <!-- 帖子列表 -->
+  <scroll-view class="post-list" scroll-y 
+    refresher-enabled="true" 
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh">
+    <view 
+      class="post-item card" 
+      wx:for="{{postList}}" 
+      wx:key="postId"
+    >
+      <view class="post-header">
+        <view class="user-info">
+          <image class="avatar" src="{{item.userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+          <view class="user-details">
+            <text class="username">{{item.userInfo.nickname}}</text>
+            <text class="post-time">{{item.formattedTime}}</text>
+          </view>
+        </view>
+        <view class="post-meta">
+          <view class="post-type-tag type-{{item.categoryId}}">
+            {{item.categoryName}}
+          </view>
+          <view class="secondhand-tag" wx:if="{{item.categoryId == 2}}">🛒 二手交易</view>
+          <view class="post-status {{item.status === 1 ? 'status-pending' : item.status === 2 ? 'status-approved' : 'status-rejected'}}">
+            {{item.statusText}}
+          </view>
+        </view>
+      </view>
+      
+      <!-- 帖子内容 -->
+      <view class="post-content" catchtap="viewPostDetail" data-post="{{item}}">
+        <text class="post-title">{{item.title}}</text>
+        <text class="post-text">{{item.contentPreview}}</text>
+        
+        <!-- 图片预览 -->
+        <view class="image-grid" wx:if="{{item.imageUrls && item.imageUrls.length > 0}}">
+          <image 
+            class="post-image {{item.imageUrls.length === 1 ? 'single' : ''}}" 
+            wx:for="{{item.imageUrls}}" 
+            wx:key="index"
+            src="{{item}}" 
+            mode="aspectFill"
+            catchtap="previewImage"
+            data-urls="{{item.imageUrls}}"
+            data-current="{{item}}"
+          ></image>
+        </view>
+        
+        <!-- 位置信息 -->
+        <view class="location-info" wx:if="{{item.locationName}}">
+          <text class="location-icon">📍</text>
+          <text class="location-text">{{item.locationName}}</text>
+        </view>
+      </view>
+      
+      <!-- 帖子标签 -->
+      <view class="post-tags">
+        <view class="tag {{item.isAnonymous ? 'anonymous-tag' : 'normal-tag'}}">
+          {{item.isAnonymous ? '匿名' : '实名'}}
+        </view>
+        <view class="tag top-tag" wx:if="{{item.isTop}}">置顶</view>
+      </view>
+      
+      <!-- 操作按钮 - 仅待审核帖子显示审核按钮，已通过帖子显示置顶按钮 -->
+      <view class="post-actions" wx:if="{{item.status === 1}}">
+        <button 
+          class="action-btn btn-success btn-large" 
+          bindtap="showApproveModal"
+          data-post="{{item}}"
+        >✓ 通过</button>
+        
+        <button 
+          class="action-btn btn-danger btn-large" 
+          bindtap="showRejectModal"
+          data-post="{{item}}"
+        >✕ 拒绝</button>
+      </view>
+      
+      <!-- 已通过帖子的置顶按钮 -->
+      <view class="post-actions" wx:if="{{item.status === 2}}">
+        <button 
+          class="action-btn btn-primary btn-large" 
+          bindtap="toggleTopPost"
+          data-post="{{item}}"
+        >{{item.isTop ? '取消置顶' : '置顶帖子'}}</button>
+      </view>
+    </view>
+    
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{postList.length === 0 && !loading}}">
+      <text class="empty-icon">📝</text>
+      <text class="empty-text">暂无相关帖子</text>
+    </view>
+    
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{hasMore}}">
+      <text wx:if="{{loading}}">加载中...</text>
+      <text wx:else>上拉加载更多</text>
+    </view>
+  </scroll-view>
+
+  <!-- 审核模态框 -->
+  <view class="modal-overlay" wx:if="{{showReviewModal}}" bindtap="closeReviewModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">审核帖子</text>
+        <text class="modal-close" bindtap="closeReviewModal">×</text>
+      </view>
+      
+      <view class="modal-body" wx:if="{{selectedPost}}">
+        <!-- 帖子详情 -->
+        <view class="post-detail">
+          <view class="detail-header">
+            <image class="detail-avatar" src="{{selectedPost.userAvatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+            <view class="detail-user-info">
+              <text class="detail-username">{{selectedPost.username}}</text>
+              <text class="detail-time">{{formatTime(selectedPost.createTime)}}</text>
+            </view>
+          </view>
+          
+          <view class="detail-content">
+            <text class="detail-title">{{selectedPost.title}}</text>
+            <text class="detail-text">{{selectedPost.content}}</text>
+            
+            <view class="detail-images" wx:if="{{selectedPost.imageUrls && selectedPost.imageUrls.length > 0}}">
+              <image 
+                class="detail-image" 
+                wx:for="{{selectedPost.imageUrls}}" 
+                wx:key="index"
+                src="{{item}}" 
+                mode="widthFix"
+                bindtap="previewImage"
+                data-urls="{{selectedPost.imageUrls}}"
+                data-current="{{item}}"
+              ></image>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 审核选项 -->
+        <view class="review-options">
+          <text class="option-title">审核结果：</text>
+          <view class="status-buttons">
+            <button 
+              class="status-btn {{reviewStatus === 2 ? 'active approved' : ''}}" 
+              bindtap="selectReviewStatus"
+              data-status="2"
+            >通过</button>
+            <button 
+              class="status-btn {{reviewStatus === 3 ? 'active rejected' : ''}}" 
+              bindtap="selectReviewStatus"
+              data-status="3"
+            >拒绝</button>
+          </view>
+        </view>
+        
+        <view class="remark-section">
+          <text class="remark-label">审核备注：</text>
+          <textarea 
+            class="remark-input" 
+            placeholder="请输入审核备注..."
+            value="{{reviewRemark}}"
+            bindinput="onRemarkInput"
+            maxlength="200"
+          ></textarea>
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="btn btn-default" bindtap="closeReviewModal">取消</button>
+        <button class="btn btn-primary" bindtap="submitReview">提交审核</button>
+      </view>
+    </view>
+  </view>
+</view>

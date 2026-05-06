@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.ccst.communitysocialmain.mapper.LikeRecordMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.edu.ccst.communitysocialmain.entity.LikeRecord">
+        <id column="like_id" property="likeId"/>
+        <result column="user_id" property="userId"/>
+        <result column="target_type" property="targetType"/>
+        <result column="target_id" property="targetId"/>
+        <result column="like_time" property="likeTime"/>
+    </resultMap>
+
+    <!-- 通用查询列 -->
+    <sql id="Base_Column_List">
+        like_id, user_id, target_type, target_id, like_time
+    </sql>
+
+    <!-- 根据点赞 ID 查询点赞记录 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM like_record
+        WHERE like_id = #{likeId}
+    </select>
+
+    <!-- 根据用户 ID、目标类型和目标 ID 查询点赞记录 -->
+    <select id="selectByUserAndTarget" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM like_record
+        WHERE user_id = #{userId}
+          AND target_type = #{targetType}
+          AND target_id = #{targetId}
+    </select>
+
+    <!-- 根据用户 ID 查询点赞列表 -->
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM like_record
+        WHERE user_id = #{userId}
+        <if test="targetType != null">
+            AND target_type = #{targetType}
+        </if>
+        ORDER BY like_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 根据目标类型和目标 ID 查询点赞用户列表 -->
+    <select id="selectByTarget" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM like_record
+        WHERE target_type = #{targetType}
+          AND target_id = #{targetId}
+        ORDER BY like_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 统计目标被点赞数量 -->
+    <select id="countByTarget" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM like_record
+        WHERE target_type = #{targetType}
+          AND target_id = #{targetId}
+    </select>
+
+    <!-- 插入点赞记录 -->
+    <insert id="insert" parameterType="cn.edu.ccst.communitysocialmain.entity.LikeRecord">
+        INSERT INTO like_record (
+            like_id,
+            user_id,
+            target_type,
+            target_id,
+            like_time
+        ) VALUES (
+            #{likeId},
+            #{userId},
+            #{targetType},
+            #{targetId},
+            #{likeTime}
+        )
+    </insert>
+
+    <!-- 删除点赞记录 -->
+    <delete id="deleteById">
+        DELETE FROM like_record
+        WHERE like_id = #{likeId}
+    </delete>
+
+    <!-- 根据用户 ID、目标类型和目标 ID 删除点赞记录 -->
+    <delete id="deleteByUserAndTarget">
+        DELETE FROM like_record
+        WHERE user_id = #{userId}
+          AND target_type = #{targetType}
+          AND target_id = #{targetId}
+    </delete>
+
+    <!-- 统计点赞总数 -->
+    <select id="countAll" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM like_record
+    </select>
+
+    <!-- 统计指定时间段内的点赞数 -->
+    <select id="countByTimeRange" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM like_record
+        WHERE like_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+</mapper>

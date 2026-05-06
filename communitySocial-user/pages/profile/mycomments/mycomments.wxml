@@ -1,0 +1,127 @@
+<!--pages/profile/mycomments/mycomments.wxml-->
+<view class="mycomments-container">
+  <!-- 页面头部 -->
+  <!-- <view class="header-section">
+    <view class="header-content">
+      <text class="back-btn" bindtap="onBack">←</text>
+      <text class="page-title">我的评论</text>
+    </view>
+  </view> -->
+
+  <!-- 内容区域 -->
+  <scroll-view 
+    class="comments-scroll" 
+    scroll-y="true" 
+    bindscrolltolower="onScrollToLower"
+    lower-threshold="50"
+    refresher-enabled="true"
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh"
+  >
+    <!-- 加载状态 -->
+    <view class="loading-section" wx:if="{{loading && comments.length === 0}}">
+      <!-- 骨架屏效果 -->
+      <view class="skeleton-item" wx:for="{{[1,2,3]}}" wx:key="index">
+        <view class="skeleton-header">
+          <view class="skeleton-avatar"></view>
+          <view class="skeleton-info">
+            <view class="skeleton-line short"></view>
+            <view class="skeleton-line"></view>
+          </view>
+        </view>
+        <view class="skeleton-content">
+          <view class="skeleton-line"></view>
+          <view class="skeleton-line short"></view>
+        </view>
+        <view class="skeleton-footer">
+          <view class="skeleton-line tiny"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 评论列表 -->
+    <view class="comments-list" wx:if="{{comments.length > 0}}">
+      <block wx:for="{{comments}}" wx:key="commentId">
+        <view class="comment-item" bindtap="onCommentTap" data-commentid="{{item.commentId}}">
+          <!-- 评论的帖子信息 -->
+          <view class="post-info" wx:if="{{item.postInfo}}">
+            <view class="post-title-text">
+              <text class="post-label">帖子:</text>
+              <text class="post-name">{{item.postInfo.title}}</text>
+            </view>
+          </view>
+
+          <!-- 评论内容 -->
+          <view class="comment-content">
+            <text class="comment-text">{{item.content}}</text>
+          </view>
+
+          <!-- 回复目标 (如果有) -->
+          <view class="reply-target" wx:if="{{item.replyToNickname}}">
+            <text class="reply-label">回复 @{{item.replyToNickname}}:</text>
+            <text class="reply-content" wx:if="{{item.replyContent}}">{{item.replyContent}}</text>
+          </view>
+
+          <!-- 评论底部信息 -->
+          <view class="comment-footer">
+            <view class="comment-meta">
+              <text class="create-time">{{item.createTime}}</text>
+              <text class="comment-status {{item.status === 1 ? 'pending' : item.status === 2 ? 'approved' : 'rejected'}}">
+                {{item.status === 1 ? '审核中' : item.status === 2 ? '已通过' : '未通过'}}
+              </text>
+            </view>
+            <view class="comment-actions">
+              <view class="action-item">
+                <text class="icon">👍</text>
+                <text class="count">{{item.likeCount || 0}}</text>
+              </view>
+              <view class="action-item">
+                <text class="icon">💬</text>
+                <text class="count">{{item.replyCount || 0}}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 操作按钮 -->
+          <view class="comment-buttons">
+            <button 
+              class="btn btn-secondary" 
+              catchtap="onDeleteComment" 
+              data-commentid="{{item.commentId}}"
+              data-index="{{index}}"
+            >
+              删除
+            </button>
+            <button 
+              class="btn btn-primary" 
+              catchtap="onReplyComment" 
+              data-commentid="{{item.commentId}}"
+              data-postid="{{item.postId}}"
+              wx:if="{{item.status !== 1}}"
+            >
+              回复
+            </button>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-section" wx:if="{{!loading && comments.length === 0}}">
+      <image class="empty-icon" src="/images/empty-comments.png" mode="aspectFit"></image>
+      <text class="empty-text">暂无评论</text>
+      <text class="empty-subtext">快去发布你的第一条评论吧！</text>
+    </view>
+
+    <!-- 上拉加载更多 -->
+    <view class="load-more" wx:if="{{comments.length > 0}}">
+      <view wx:if="{{hasMore}}">
+        <loading></loading>
+        <text>正在加载更多...</text>
+      </view>
+      <view wx:else>
+        <text>没有更多了</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

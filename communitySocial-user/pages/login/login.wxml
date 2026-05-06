@@ -1,0 +1,40 @@
+<!--pages/login/login.wxml-->
+<view class="login-container">
+  <view class="logo-section">
+    <image class="logo" src="https://lyjsqsj.oss-cn-chengdu.aliyuncs.com/logo.png" mode="aspectFit"></image>
+    <text class="app-name">社区邻里</text>
+    <text class="app-slogan">连接邻里，共建美好社区</text>
+  </view>
+
+  <view class="login-section">
+    <button 
+      class="login-btn" 
+      type="primary" 
+      bindtap="onLoginTap"
+      disabled="{{isLoggingIn}}"
+    >
+      <block wx:if="{{!isLoggingIn}}">微信授权一键登录</block>
+      <block wx:else>
+        <loading class="loading-icon"></loading>登录中...
+      </block>
+    </button>
+
+    <!-- 账号密码登录按钮 -->
+    <button 
+      class="account-login-btn" 
+      bindtap="onAccountLoginTap"
+    >
+      账号密码登录
+    </button>
+    
+    <view class="login-help" wx:if="{{isLoggingIn}}">
+      <text class="help-text">正在为您安全登录，请稍候...</text>
+    </view>
+  </view>
+
+  <view class="agreement-section">
+    <text class="agreement-text">
+      登录即表示您同意《用户协议》和《隐私政策》
+    </text>
+  </view>
+</view>

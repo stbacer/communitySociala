@@ -1,0 +1,287 @@
+/* pages/profile/mycomments/mycomments.wxss */
+.mycomments-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* 页面头部 */
+.header-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20rpx 30rpx 100rpx;
+  position: relative;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back-btn {
+  font-size: 40rpx;
+  color: white;
+  padding: 10rpx;
+}
+
+.page-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: white;
+}
+
+/* 滚动区域 */
+.comments-scroll {
+  height: calc(100vh - 120rpx);
+  padding: 0 0 30rpx;
+}
+
+/* 加载状态 */
+.loading-section {
+  padding: 30rpx;
+}
+
+.skeleton-item {
+  background: white;
+  border-radius: 15rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.skeleton-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background: #e0e0e0;
+  margin-right: 20rpx;
+}
+
+.skeleton-info {
+  flex: 1;
+}
+
+.skeleton-line {
+  height: 24rpx;
+  background: #e0e0e0;
+  border-radius: 4rpx;
+  margin-bottom: 10rpx;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+.skeleton-content {
+  margin-bottom: 20rpx;
+}
+
+.skeleton-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skeleton-line.tiny {
+  width: 100rpx;
+  height: 20rpx;
+}
+
+/* 评论列表 */
+.comments-list {
+  padding: 0 30rpx;
+}
+
+.comment-item {
+  background: white;
+  border-radius: 15rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.post-info {
+  margin-bottom: 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #f5f5f5;
+}
+
+.post-title-text {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.post-label {
+  color: #999;
+  margin-right: 10rpx;
+}
+
+.post-name {
+  color: #333;
+  font-weight: 500;
+}
+
+.comment-content {
+  margin-bottom: 20rpx;
+}
+
+.comment-text {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+.reply-target {
+  background: #f9f9f9;
+  padding: 20rpx;
+  border-radius: 10rpx;
+  margin-bottom: 20rpx;
+}
+
+.reply-label {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.reply-content {
+  display: block;
+  font-size: 26rpx;
+  color: #333;
+  line-height: 1.5;
+}
+
+.comment-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid #f5f5f5;
+}
+
+.comment-meta {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.create-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.comment-status {
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.comment-status.pending {
+  background: #ffeb3b;
+  color: #333;
+}
+
+.comment-status.approved {
+  background: #4caf50;
+  color: white;
+}
+
+.comment-status.rejected {
+  background: #f44336;
+  color: white;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 30rpx;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: 5rpx;
+}
+
+.action-item .icon {
+  font-size: 28rpx;
+}
+
+.action-item .count {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 操作按钮 */
+.comment-buttons {
+  display: flex;
+  gap: 20rpx;
+}
+
+.btn {
+  flex: 1;
+  padding: 15rpx;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  text-align: center;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-secondary {
+  background: #f5f5f5;
+  color: #666;
+}
+
+/* 空状态 */
+.empty-section {
+  text-align: center;
+  padding: 100rpx 30rpx;
+}
+
+.empty-icon {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 30rpx;
+}
+
+.empty-text {
+  display: block;
+  font-size: 32rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+}
+
+.empty-subtext {
+  display: block;
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 30rpx;
+}
+
+/* 加载更多 */
+.load-more {
+  text-align: center;
+  padding: 30rpx;
+  color: #999;
+  font-size: 26rpx;
+}

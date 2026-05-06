@@ -1,0 +1,63 @@
+<!--pages/message/conversation-list/conversation-list.wxml-->
+<view class="conversation-container">
+  <!-- 搜索栏 -->
+  <view class="search-bar" wx:if="{{showSearch}}">
+    <view class="search-box">
+      <input 
+        class="search-input" 
+        placeholder="搜索联系人..." 
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearch"
+      />
+      <text class="clear-search" bindtap="clearSearch" wx:if="{{searchKeyword}}">✕</text>
+      <button class="search-btn" bindtap="onSearch">搜索</button>
+    </view>
+  </view>
+
+  <!-- 会话列表 -->
+  <scroll-view class="conversations-scroll" scroll-y="true" refresher-enabled="{{true}}" refresher-triggered="{{refreshing}}" bindrefresherrefresh="onRefresh">
+    <view class="conversations-list">
+      <block wx:for="{{conversations}}" wx:key="userId">
+        <view class="conversation-item" 
+              bindtap="enterChat" 
+              data-user-id="{{item.userId}}"
+              data-nickname="{{item.nickname}}"
+              data-avatar="{{item.avatarUrl}}">
+          <!-- 左侧头像 -->
+          <image 
+            class="avatar" 
+            src="{{item.avatarUrl || '/images/default-avatar.png'}}" 
+            mode="aspectFill"
+          ></image>
+          
+          <!-- 中间内容 -->
+          <view class="conversation-content">
+            <view class="conversation-header">
+              <text class="nickname">{{item.nickname}}</text>
+              <text class="time">{{item.formattedSendTime || item.sendTime}}</text>
+            </view>
+            <view class="last-message">
+              <text class="message-text {{item.lastMessageContent === '[图片]' ? 'image-indicator' : ''}}">{{item.lastMessageContent || item.content}}</text>
+              <view class="unread-badge" wx:if="{{item.unreadCount > 0}}">
+                <text>{{item.unreadCount > 99 ? '99+' : item.unreadCount}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="load-more" wx:if="{{loading}}">
+      <loading></loading>
+      <text>加载中...</text>
+    </view>
+    
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{conversations.length === 0 && !loading}}">
+      <text class="empty-icon">💬</text>
+      <text class="empty-text">暂无消息</text>
+    </view>
+  </scroll-view>
+</view>
